@@ -325,21 +325,45 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
   background:linear-gradient(to top,rgba(14,30,35,.28),transparent 46%)}
 
 /* ==========================================================================
-   HOW IT'S DONE — each photo with its own words, one after another
+   THE PASSES — the signature section. The floor polishes under your scroll.
    ========================================================================== */
-.pass{background:var(--canvas);color:var(--on-ink);overflow:hidden}
-.pass .grain{z-index:0}
-.pass .wrap{position:relative;z-index:1}
-.pass h2,.pass h3{color:#fff}
-.pass .eyebrow{color:var(--accent-soft)}
+.pass{background:var(--canvas);color:var(--on-ink);padding:0}
+.pass-track{height:270svh;position:relative}
+.pass-stage{position:sticky;top:0;height:100svh;overflow:hidden;
+  display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);align-items:center}
+.pass-stage .grain{z-index:0}
+.pass-txt{position:relative;z-index:2;padding:calc(var(--hdr) + 24px) clamp(24px,5vw,72px) 48px
+  max(var(--gut),calc((100vw - var(--max))/2 + var(--gut)))}
+.pass-txt h2{max-width:12ch;color:#fff}
+.pass-steps{display:grid}
+.pass-step{grid-area:1/1;opacity:0;transform:translate3d(0,16px,0);pointer-events:none;
+  transition:opacity .45s var(--out),transform .6s var(--out)}
+.pass-step.on{opacity:1;transform:none;pointer-events:auto;transition-delay:.08s}
 .pass-k{margin:0 0 var(--s3);font:600 .8rem/1 var(--f-text);letter-spacing:.04em;color:var(--accent-soft)}
-.stages{display:flex;flex-direction:column;gap:clamp(48px,7vw,96px)}
-.stage{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,5vw,72px);align-items:center}
-.stage-txt h3{font-size:clamp(1.6rem,3vw,2.3rem);letter-spacing:-.03em;line-height:1.05}
-.stage-txt p:not(.pass-k){margin-top:var(--s4);color:var(--on-ink-mute);font-size:1.05rem;max-width:38ch}
-.stage-img .media{border-radius:var(--r-lg);aspect-ratio:4/3;box-shadow:0 30px 60px -24px rgba(0,0,0,.6)}
-.stage-img.rv{transform:translate3d(0,40px,0) scale(.98)}
-.stage-img.rv.in{transform:none}
+.pass .eyebrow{color:var(--accent-soft)}
+.pass .lede{color:var(--on-ink-mute)}
+.pass-txt .lede{max-width:40ch}
+.pass-meter{margin-top:var(--s7);width:min(260px,70%);height:2px;border-radius:2px;
+  background:var(--line-ink);overflow:hidden}
+.pass-meter i{display:block;height:100%;background:var(--accent-soft);
+  transform-origin:left center;transform:scaleX(0)}
+.pass-panel{position:relative;height:100%;overflow:hidden}
+.plate{position:absolute;inset:0;will-change:opacity}
+.plate img{width:100%;height:100%;object-fit:cover;object-position:center 62%}
+.plate-1{opacity:1}
+.plate-2,.plate-3{opacity:0}
+.pass-band{position:absolute;left:0;right:0;top:0;height:clamp(60px,11vh,120px);margin-top:calc(clamp(60px,11vh,120px) / -2);
+  z-index:3;pointer-events:none;opacity:0;will-change:transform,opacity;
+  background:linear-gradient(180deg,transparent,rgba(143,212,172,.22) 40%,rgba(255,255,255,.62) 50%,rgba(143,212,172,.22) 60%,transparent);
+  mix-blend-mode:screen}
+.pass-sheen{position:absolute;inset:-10% -30%;z-index:4;pointer-events:none;opacity:0;will-change:transform,opacity;
+  background:linear-gradient(104deg,transparent 30%,rgba(255,255,255,.3) 48%,transparent 66%);
+  mix-blend-mode:screen}
+.pass-edge{position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:linear-gradient(90deg,var(--canvas) 0%,rgba(14,30,35,0) 18%),
+             linear-gradient(0deg,rgba(14,30,35,.75) 0%,rgba(14,30,35,0) 30%)}
+.pass-cap{position:absolute;right:clamp(16px,3vw,32px);bottom:clamp(16px,4vh,32px);z-index:6;margin:0;
+  font:500 .74rem/1.4 var(--f-text);letter-spacing:.12em;text-transform:uppercase;color:rgba(234,240,238,.82)}
 
 /* ==========================================================================
    RAIL, BEFORE/AFTER, GALLERY, LIGHTBOX
@@ -610,7 +634,15 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   .callbar{display:flex}
   body{padding-bottom:78px}
 
-  .stage{grid-template-columns:1fr;gap:var(--s5)}
+  .pass-track{height:240svh}
+  .pass-stage{grid-template-columns:1fr;grid-template-rows:auto 1fr;align-items:stretch}
+  .pass-txt{padding:calc(var(--hdr) + 20px) var(--gut) 20px}
+  .pass-txt h2{font-size:clamp(1.7rem,7vw,2.2rem);max-width:none}
+  .pass-txt .lede{font-size:.98rem;margin-top:var(--s3)}
+  .pass-meter{margin-top:var(--s4)}
+  .pass-panel{margin:0 var(--gut) 20px;border-radius:var(--r-lg)}
+  .pass-edge{background:linear-gradient(0deg,rgba(14,30,35,.6) 0%,rgba(14,30,35,0) 30%)}
+  .pass-cap{left:16px;right:auto;bottom:14px;font-size:.64rem}
 
   .showcase{grid-template-columns:1fr}
   .show-media{display:none}
@@ -641,5 +673,6 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
   .js .rv{opacity:1;transform:none}
   .hero-media,.hero-in{transform:none!important;opacity:1!important}
+  .pass-band,.pass-sheen{display:none}
   @view-transition{navigation:none}
 }

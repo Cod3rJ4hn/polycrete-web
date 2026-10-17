@@ -309,6 +309,16 @@
   var heroIn = document.querySelector('.hero-in');
   var heroEl = document.querySelector('.hero');
 
+  var track = document.querySelector('.pass-track');
+  var panel = track && track.querySelector('.pass-panel');
+  var p2 = track && track.querySelector('.plate-2');
+  var p3 = track && track.querySelector('.plate-3');
+  var band = track && track.querySelector('.pass-band');
+  var sheen = track && track.querySelector('.pass-sheen');
+  var meter = track && track.querySelector('.pass-meter i');
+  var pSteps = track ? track.querySelectorAll('.pass-step') : [];
+  var polish = 0, lastPolish = -1, stage = 0;
+
   function tick(time) {
     revealCheck();
     if (lenis) lenis.raf(time);
@@ -323,6 +333,30 @@
       }
     }
 
+    if (track) {
+      var r = track.getBoundingClientRect();
+      var travel = r.height - vh;
+      var raw = travel > 0 ? clamp(-r.top / travel, 0, 1) : 0;
+      polish = reduced ? raw : lerp(polish, raw, 0.22);
+      if (Math.abs(polish - lastPolish) > 0.0005) {
+        lastPolish = polish;
+        var e = polish;
+        p2.style.opacity = smooth(0.12, 0.42, e).toFixed(3);
+        p3.style.opacity = smooth(0.56, 0.86, e).toFixed(3);
+        var ph = panel.clientHeight;
+        band.style.transform = 'translate3d(0,' + (e * ph).toFixed(1) + 'px,0)';
+        band.style.opacity = clamp(Math.sin(Math.PI * e) * 1.3, 0, 1).toFixed(3);
+        sheen.style.transform = 'translate3d(' + ((e - 0.5) * 36).toFixed(2) + '%,0,0)';
+        sheen.style.opacity = (smooth(0.55, 1, e) * 0.55).toFixed(3);
+        meter.style.transform = 'scaleX(' + e.toFixed(4) + ')';
+        /* the words on the left change at the same moment the photo does */
+        var st = e < 0.27 ? 0 : e < 0.71 ? 1 : 2;
+        if (st !== stage) {
+          stage = st;
+          for (var k = 0; k < pSteps.length; k++) pSteps[k].classList.toggle('on', k === st);
+        }
+      }
+    }
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);

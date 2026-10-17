@@ -286,6 +286,31 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
   from{clip-path:inset(-25% 100% -45% -6%);transform:translate3d(-.04em,0,0)}
   to{clip-path:inset(-25% -6% -45% -6%);transform:none}}
 
+/* hero logo — sits where the rating badge was */
+.hero-logo{display:block;width:clamp(84px,8vw,112px);height:auto;margin:0 auto var(--s5);
+  filter:drop-shadow(0 6px 24px rgba(0,0,0,.35))}
+.hero-anim .hero-logo{animation:hLogo 1s var(--out) .05s backwards}
+@keyframes hLogo{from{opacity:0;transform:scale(.82) translate3d(0,10px,0)}}
+
+/* ---------- review banner: replaces the four badges ---------- */
+.rbanner{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;
+  gap:14px;padding:22px var(--gut);background:var(--ink-2);border-top:1px solid var(--line-ink);
+  color:#fff;text-decoration:none;flex-wrap:wrap}
+.rbanner::before{content:'';position:absolute;inset:0;z-index:-1;background:#fff;opacity:0;
+  transition:opacity .45s var(--out)}
+.rb-stars{color:var(--star);font-size:1.45rem;letter-spacing:4px;line-height:1;
+  text-shadow:0 0 18px rgba(245,184,61,.35);transition:transform .6s var(--spring)}
+.rb-score{font:700 1.7rem/1 var(--f-display);letter-spacing:.01em}
+.rb-txt{font:600 .95rem/1 var(--f-text);letter-spacing:.14em;text-transform:uppercase;color:var(--on-ink-mute);
+  transition:color .35s var(--out)}
+@media (hover:hover){
+  .rbanner:hover::before{opacity:.035}
+  .rbanner:hover .rb-stars{transform:scale(1.06)}
+  .rbanner:hover .rb-txt{color:#fff}
+}
+.rbanner:active .rb-stars{transform:scale(.97);transition-duration:var(--t-press)}
+.rbanner:focus-visible{outline:2px solid var(--accent-soft);outline-offset:-4px;border-radius:0}
+
 /* the rating badge — looks exactly as it always has at rest */
 .gbadge{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:11px;
   padding:8px 17px 8px 13px;margin-bottom:var(--s5);border-radius:var(--pill);
@@ -724,7 +749,7 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
   .js .rv{opacity:1;transform:none}
   .hero-media,.hero-in{transform:none!important;opacity:1!important}
-  .hero-anim .gbadge,.hero-anim .hw > span,.hero-anim h1 em,.hero-anim > p,.hero-anim .hero-btns{animation:none!important}
+  .hero-anim .hero-logo,.hero-anim .gbadge,.hero-anim .hw > span,.hero-anim h1 em,.hero-anim > p,.hero-anim .hero-btns{animation:none!important}
   .pass-band,.pass-sheen{display:none}
   @view-transition{navigation:none}
 }

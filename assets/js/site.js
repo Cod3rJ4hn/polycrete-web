@@ -307,7 +307,7 @@
      --------------------------------------------------------------------- */
   var heroMedia = document.querySelector('.hero-media');
   var heroIn = document.querySelector('.hero-in');
-  var heroEl = document.querySelector('.hero');
+  var heroEl = document.querySelector('.hero, .phero.has-img');
 
   var track = document.querySelector('.pass-track');
   var panel = track && track.querySelector('.pass-panel');

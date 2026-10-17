@@ -10,7 +10,8 @@ the repo is what gets served. Nothing loads from a third-party CDN:
 
 - Scrolling is the browser's own. Only the in-page jumps (quote button,
   rating badge) are eased.
-- Fonts: Archivo (display) and Geist (text), self-hosted woff2 (OFL) in `assets/fonts/`.
+- Fonts: Barlow Condensed (headings, in capitals) and Source Sans 3 (text),
+  self-hosted woff2 (OFL) in `assets/fonts/`.
 - Motion rules: only `transform` and `opacity` are animated, one easing family,
   every control has hover, press and focus states, reduced motion respected.
 

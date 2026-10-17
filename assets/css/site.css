@@ -608,8 +608,12 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
 .phero .hero-media img{object-position:var(--pos)}
 .phero-shade{position:absolute;inset:0;z-index:1;pointer-events:none;
   background:
-    radial-gradient(110% 80% at 12% 100%,rgba(14,30,35,.92) 0%,rgba(14,30,35,.55) 48%,transparent 78%),
-    linear-gradient(180deg,rgba(14,30,35,.6) 0%,rgba(14,30,35,.12) 38%,rgba(14,30,35,.82) 100%)}
+    radial-gradient(70% 75% at 50% 72%,rgba(14,30,35,.85) 0%,rgba(14,30,35,.5) 52%,transparent 85%),
+    linear-gradient(180deg,rgba(14,30,35,.6) 0%,rgba(14,30,35,.15) 38%,rgba(14,30,35,.85) 100%)}
+/* page headers are centred, like the home hero */
+.phero .wrap{text-align:center}
+.phero .crumb{justify-content:center}
+.phero h1,.phero p{margin-left:auto;margin-right:auto}
 .phero.has-img p{color:rgba(234,240,238,.88)}
 .phero.has-img .crumb{color:rgba(234,240,238,.9);text-shadow:0 1px 8px rgba(14,30,35,.6)}
 .phero.has-img .crumb a{opacity:1}

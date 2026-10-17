@@ -104,6 +104,91 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
   }
 
+  /* ---- smooth scrolling engine ---- */
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var animating = false;
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function headerOffset() {
+    var h = document.querySelector('.hdr');
+    return h ? h.getBoundingClientRect().height : 0;
+  }
+
+  function scrollToY(targetY, done) {
+    var maxY = document.documentElement.scrollHeight - window.innerHeight;
+    targetY = Math.max(0, Math.min(targetY, maxY));
+    var startY = window.pageYOffset;
+    var delta = targetY - startY;
+    if (reduced || Math.abs(delta) < 2) {
+      window.scrollTo(0, targetY);
+      if (done) done();
+      return;
+    }
+    // longer trips take a little longer, but never drag on
+    var dur = Math.min(1100, Math.max(480, Math.abs(delta) * 0.42));
+    var t0 = null;
+    animating = true;
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      window.scrollTo(0, startY + delta * easeInOutCubic(p));
+      if (p < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        animating = false;
+        if (done) done();
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function scrollToEl(el) {
+    var y = window.pageYOffset + el.getBoundingClientRect().top - headerOffset() - 12;
+    scrollToY(y);
+  }
+
+  /* any same-page hash link scrolls with the same easing */
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    if (a.hasAttribute('data-quote')) return; // handled below
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href').slice(1);
+      if (!id) return;
+      var el = document.getElementById(id);
+      if (!el) return;
+      e.preventDefault();
+      scrollToEl(el);
+      history.replaceState(null, '', '#' + id);
+    });
+  });
+
+  /* quote buttons toggle: down to the form, or back to the top once you're there */
+  var quote = document.getElementById('quote');
+  document.querySelectorAll('[data-quote]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      if (!quote) return; // no form on this page, follow the href
+      e.preventDefault();
+      if (animating) return;
+      var top = quote.getBoundingClientRect().top - headerOffset();
+      // already parked on the form (or below it) -> go back up
+      if (window.pageYOffset > 100 && top < window.innerHeight * 0.6) {
+        scrollToY(0);
+        history.replaceState(null, '', window.location.pathname);
+      } else {
+        scrollToEl(quote);
+        history.replaceState(null, '', '#quote');
+      }
+    });
+  });
+
+  /* landing on /#quote: ease in rather than jumping */
+  if (window.location.hash === '#quote' && quote && !reduced) {
+    window.scrollTo(0, 0);
+    setTimeout(function () { scrollToEl(quote); }, 260);
+  }
+
   /* ---- prefill job type from a service link ---- */
   var params = new URLSearchParams(window.location.search);
   var job = params.get('job');
@@ -113,6 +198,7 @@
       Array.prototype.forEach.call(sel.options, function (o) {
         if (o.value.toLowerCase() === job.toLowerCase()) sel.value = o.value;
       });
+      if (quote) setTimeout(function () { scrollToEl(quote); }, 300);
     }
   }
 })();

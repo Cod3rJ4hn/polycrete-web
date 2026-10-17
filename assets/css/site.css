@@ -335,6 +335,11 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .pass-txt{position:relative;z-index:2;padding:calc(var(--hdr) + 24px) clamp(24px,5vw,72px) 48px
   max(var(--gut),calc((100vw - var(--max))/2 + var(--gut)))}
 .pass-txt h2{max-width:12ch;color:#fff}
+.pass-steps{display:grid}
+.pass-step{grid-area:1/1;opacity:0;transform:translate3d(0,16px,0);pointer-events:none;
+  transition:opacity .45s var(--out),transform .6s var(--out)}
+.pass-step.on{opacity:1;transform:none;pointer-events:auto;transition-delay:.08s}
+.pass-k{margin:0 0 var(--s3);font:600 .8rem/1 var(--f-text);letter-spacing:.04em;color:var(--accent-soft)}
 .pass .eyebrow{color:var(--accent-soft)}
 .pass .lede{color:var(--on-ink-mute)}
 .pass-txt .lede{max-width:40ch}

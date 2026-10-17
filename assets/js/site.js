@@ -314,7 +314,8 @@
   var band = track && track.querySelector('.pass-band');
   var sheen = track && track.querySelector('.pass-sheen');
   var meter = track && track.querySelector('.pass-meter i');
-  var polish = 0, lastPolish = -1;
+  var pSteps = track ? track.querySelectorAll('.pass-step') : [];
+  var polish = 0, lastPolish = -1, stage = 0;
 
   function tick(time) {
     if (lenis) lenis.raf(time);
@@ -345,6 +346,12 @@
         sheen.style.transform = 'translate3d(' + ((e - 0.5) * 36).toFixed(2) + '%,0,0)';
         sheen.style.opacity = (smooth(0.55, 1, e) * 0.55).toFixed(3);
         meter.style.transform = 'scaleX(' + e.toFixed(4) + ')';
+        /* the words on the left change at the same moment the photo does */
+        var st = e < 0.27 ? 0 : e < 0.71 ? 1 : 2;
+        if (st !== stage) {
+          stage = st;
+          for (var k = 0; k < pSteps.length; k++) pSteps[k].classList.toggle('on', k === st);
+        }
       }
     }
     requestAnimationFrame(tick);

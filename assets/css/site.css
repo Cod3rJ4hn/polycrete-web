@@ -16,6 +16,9 @@
 @font-face{font-family:'Source Sans 3';font-style:normal;font-weight:600;font-display:swap;
   src:url(../fonts/source-sans-3-latin-600-normal.woff2) format('woff2')}
 
+@font-face{font-family:'Mr Dafoe';font-style:normal;font-weight:400;font-display:swap;
+  src:url(../fonts/mr-dafoe-latin-400-normal.woff2) format('woff2')}
+
 /* ---------- tokens ---------- */
 :root{
   --ink:#12272D;
@@ -259,7 +262,10 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .hero-in{position:relative;z-index:3;width:100%;max-width:var(--max);margin:0 auto;
   padding:calc(var(--hdr) + 96px) var(--gut) clamp(56px,7vw,88px);will-change:transform,opacity}
 .hero h1{max-width:16ch;color:#fff}
-.hero h1 em{font-style:normal;color:var(--accent-soft)}
+.hero h1 em{font-family:'Mr Dafoe','Brush Script MT',cursive;font-style:normal;font-weight:400;
+  color:#fff;text-transform:none;font-size:1.26em;letter-spacing:-.015em;line-height:.8;
+  display:inline-block;padding-right:.08em}
+.hero h1{margin-bottom:.12em}
 .hero p{margin-top:var(--s5);font-size:clamp(1.05rem,1.6vw,1.2rem);color:rgba(234,240,238,.86);max-width:48ch}
 .hero-btns{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
 

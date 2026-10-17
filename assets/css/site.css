@@ -376,11 +376,9 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .rail figcaption{margin-top:11px;font-size:.88rem;color:var(--text-mute)}
 @media (hover:hover){.rail figure:hover .media img{transform:scale(1.04)}}
 .rail-nav{display:flex;gap:10px;margin-top:var(--s5)}
-/* the slideshow runs out past the content column and fades away at the screen edge */
-[data-rail]{--side:calc(max(0px,(100vw - var(--max)) / 2) + var(--gut));--fade-r:max(var(--side),96px)}
-[data-rail] .rail{margin:0 calc(var(--side) * -1);padding:0 var(--side) 6px;scroll-padding-inline:var(--side);
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--side),#000 calc(100% - var(--fade-r)),transparent 100%);
-          mask-image:linear-gradient(90deg,transparent 0,#000 var(--side),#000 calc(100% - var(--fade-r)),transparent 100%)}
+/* the slideshow runs out past the content column to the edge of the screen */
+[data-rail]{--side:calc(max(0px,(100vw - var(--max)) / 2) + var(--gut))}
+[data-rail] .rail{margin:0 calc(var(--side) * -1);padding:0 var(--side) 6px;scroll-padding-inline:var(--side)}
 
 .ba{position:relative;border-radius:var(--r-lg);overflow:hidden;user-select:none;
   touch-action:pan-y;cursor:ew-resize;background:var(--ink-2);aspect-ratio:4/3;box-shadow:var(--sh-2)}

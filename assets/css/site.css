@@ -159,14 +159,10 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .hero p{margin-top:20px;font-size:clamp(1.03rem,1.7vw,1.21rem);color:rgba(255,255,255,.86);max-width:50ch}
 .hero-btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
 
-.gbadge{display:inline-flex;align-items:center;gap:11px;padding:8px 15px 8px 13px;
+.gbadge{display:inline-flex;align-items:center;gap:11px;padding:8px 17px 8px 13px;
   border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
   backdrop-filter:blur(8px);font-size:.87rem;margin-bottom:22px;
-  text-decoration:none;color:#fff;cursor:pointer;
-  transition:background .3s var(--ease-soft),border-color .3s var(--ease-soft),transform .3s var(--ease-soft)}
-.gbadge:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.42);transform:translateY(-2px)}
-.gbadge-ar{width:14px;height:14px;opacity:.7;transition:transform .3s var(--ease-soft)}
-.gbadge:hover .gbadge-ar{transform:translateY(2px);opacity:1}
+  text-decoration:none;color:#fff;cursor:pointer}
 .gbadge .stars{color:#FFC043;letter-spacing:2px;font-size:.9rem}
 .gbadge b{font-weight:650}
 .gbadge span{color:rgba(255,255,255,.75)}

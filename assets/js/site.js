@@ -23,7 +23,7 @@
      --------------------------------------------------------------------- */
   var lenis = null;
   if (!reduced && finePointer && typeof window.Lenis === 'function') {
-    lenis = new window.Lenis({ lerp: 0.1, wheelMultiplier: 1, smoothWheel: true, anchors: false });
+    lenis = new window.Lenis({ lerp: 0.2, wheelMultiplier: 1, smoothWheel: true, anchors: false });
   }
   function scrollY() { return lenis ? lenis.scroll : window.pageYOffset; }
 
@@ -333,7 +333,7 @@
       var r = track.getBoundingClientRect();
       var travel = r.height - vh;
       var raw = travel > 0 ? clamp(-r.top / travel, 0, 1) : 0;
-      polish = reduced ? raw : lerp(polish, raw, 0.14);
+      polish = reduced ? raw : lerp(polish, raw, 0.22);
       if (Math.abs(polish - lastPolish) > 0.0005) {
         lastPolish = polish;
         var e = polish;

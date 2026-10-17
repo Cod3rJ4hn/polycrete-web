@@ -255,19 +255,36 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 @media (max-width:860px){.hero-media img{object-position:62% 62%}}
 .hero-shade{position:absolute;inset:0;z-index:1;
   background:
-    radial-gradient(120% 70% at 18% 100%,rgba(14,30,35,.92) 0%,rgba(14,30,35,.55) 45%,transparent 75%),
-    radial-gradient(90% 60% at 100% 0%,rgba(14,30,35,.55) 0%,transparent 70%),
-    linear-gradient(180deg,rgba(14,30,35,.55) 0%,rgba(14,30,35,.15) 35%,rgba(14,30,35,.85) 100%)}
+    radial-gradient(75% 65% at 50% 62%,rgba(14,30,35,.82) 0%,rgba(14,30,35,.5) 50%,transparent 82%),
+    linear-gradient(180deg,rgba(14,30,35,.55) 0%,rgba(14,30,35,.2) 35%,rgba(14,30,35,.88) 100%)}
 .hero .grain{z-index:2}
 .hero-in{position:relative;z-index:3;width:100%;max-width:var(--max);margin:0 auto;
   padding:calc(var(--hdr) + 96px) var(--gut) clamp(56px,7vw,88px);will-change:transform,opacity}
-.hero h1{max-width:16ch;color:#fff}
+.hero h1{max-width:none;color:#fff}
+.hero-in{text-align:center}
+.hero p{margin-left:auto;margin-right:auto}
+.hero .hero-btns{justify-content:center}
 .hero h1 em{font-family:'Mr Dafoe','Brush Script MT',cursive;font-style:normal;font-weight:400;
   color:#fff;text-transform:none;font-size:1.26em;letter-spacing:-.015em;line-height:.8;
   display:inline-block;padding-right:.08em}
 .hero h1{margin-bottom:.12em}
 .hero p{margin-top:var(--s5);font-size:clamp(1.05rem,1.6vw,1.2rem);color:rgba(234,240,238,.86);max-width:48ch}
 .hero-btns{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
+
+/* ---------- hero entrance: badge, the words pop up one by one, then the
+   script is written in left to right like a pen, then the rest ---------- */
+.hw{display:inline-block;overflow:hidden;vertical-align:bottom;padding:.04em .02em .06em;margin:-.04em -.02em -.06em}
+.hw > span{display:inline-block}
+.hero-anim .gbadge{animation:hFade .8s var(--out) .1s backwards}
+.hero-anim .hw > span{animation:hPop 1s cubic-bezier(.2,1.25,.35,1) backwards;animation-delay:calc(.3s + var(--w) * .13s)}
+.hero-anim h1 em{animation:hWrite 1.35s cubic-bezier(.55,.1,.4,.95) 1.05s backwards}
+.hero-anim > p{animation:hFade .9s var(--out) 1.75s backwards}
+.hero-anim .hero-btns{animation:hFade .9s var(--out) 1.9s backwards}
+@keyframes hFade{from{opacity:0;transform:translate3d(0,18px,0)}}
+@keyframes hPop{from{transform:translate3d(0,115%,0) rotate(4deg)}}
+@keyframes hWrite{
+  from{clip-path:inset(-25% 100% -45% -6%);transform:translate3d(-.04em,0,0)}
+  to{clip-path:inset(-25% -6% -45% -6%);transform:none}}
 
 /* the rating badge — looks exactly as it always has at rest */
 .gbadge{position:relative;isolation:isolate;display:inline-flex;align-items:center;gap:11px;
@@ -707,6 +724,7 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
   .js .rv{opacity:1;transform:none}
   .hero-media,.hero-in{transform:none!important;opacity:1!important}
+  .hero-anim .gbadge,.hero-anim .hw > span,.hero-anim h1 em,.hero-anim > p,.hero-anim .hero-btns{animation:none!important}
   .pass-band,.pass-sheen{display:none}
   @view-transition{navigation:none}
 }

@@ -6,7 +6,13 @@ concrete finishing business in Goulburn, NSW.
 ## Stack
 
 Plain HTML, CSS and vanilla JS. No framework, no build step — what's in
-the repo is what gets served.
+the repo is what gets served. Nothing loads from a third-party CDN:
+
+- Smooth wheel scrolling: Lenis 1.1.13 (MIT), vendored in `assets/js/vendor/`.
+  Desktop only; touch devices keep native scrolling.
+- Fonts: Archivo (display) and Geist (text), self-hosted woff2 (OFL) in `assets/fonts/`.
+- Motion rules: only `transform` and `opacity` are animated, one easing family,
+  every control has hover, press and focus states, reduced motion respected.
 
 ```
 index.html      Home
@@ -42,8 +48,8 @@ Every push to `main` redeploys automatically.
 - **Quote form** posts to FormSubmit (`formsubmit.co`). The first submission
   triggers a one-off confirmation email that must be clicked before anything
   else comes through. Endpoint is in each page's `<form action>`.
-- **Service areas** in `areas.html` are a best guess beyond Goulburn —
-  confirm the real range with Corey.
+- **Service areas**: the site says "Goulburn and the Southern Tablelands" and
+  names no other towns. Add Corey's real range once he confirms it.
 - The **exposed aggregate driveway** and **outdoor bench** photos sit in the
   gallery as examples of range. They are not listed as named services,
   because it isn't confirmed whether Polycrete poured them or finished them.

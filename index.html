@@ -2,296 +2,632 @@
 <html lang="en-AU">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Polycrete | Polished Concrete &amp; Epoxy Floors, Goulburn NSW</title>
-<meta name="description" content="Polished concrete, seamless epoxy coating, honed concrete and floor prep across Goulburn and the Southern Tablelands. Rated 5.0 on Google. Call 0468 965 583.">
-<meta name="theme-color" content="#12272D">
-<meta property="og:title" content="Polycrete | Polished Concrete &amp; Epoxy Floors, Goulburn NSW">
-<meta property="og:description" content="Polished concrete, seamless epoxy coating, honed concrete and floor prep across Goulburn and the Southern Tablelands. Rated 5.0 on Google. Call 0468 965 583.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Polycrete · the slab is already there</title>
+<meta name="description" content="Polished concrete, seamless epoxy and honed finishes in Goulburn and the Southern Tablelands. Rated 5.0 on Google. Call 0468 965 583.">
+<meta name="theme-color" content="#0B1417">
+<meta property="og:title" content="Polycrete · the slab is already there">
+<meta property="og:description" content="Polished concrete, seamless epoxy and honed finishes in Goulburn and the Southern Tablelands.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/img/logo-dark.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650&family=Inter+Tight:wght@600;650;680&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/site.css">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "name": "Polycrete",
-  "description": "Polished concrete, seamless epoxy coating, honed concrete and floor prep in Goulburn and the Southern Tablelands.",
-  "telephone": "+61468965583",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "50 Mulwaree St",
-    "addressLocality": "Goulburn",
-    "addressRegion": "NSW",
-    "postalCode": "2580",
-    "addressCountry": "AU"
-  },
-  "geo": { "@type": "GeoCoordinates", "latitude": -34.7501657, "longitude": 149.7295498 },
-  "openingHoursSpecification": [{
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
-    "opens": "07:00", "closes": "17:00"
-  }],
-  "aggregateRating": { "@type": "AggregateRating", "ratingValue": "5.0", "reviewCount": "4" },
-  "areaServed": ["Goulburn","Marulan","Crookwell","Taralga","Collector","Gunning","Tarago","Bungonia","Southern Tablelands"],
-  "sameAs": ["https://www.facebook.com/people/Polycrete/100090141532431/", "https://www.instagram.com/polycrete_/"]
-}
-</script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/scrollcraft.css">
+<style>
+  /* ── the whole rebrand: six roles, two faces ───────────────────────────── */
+  :root{
+    --sc-canvas:     #0B1417;
+    --sc-surface:    #12272D;
+    --sc-ink:        #EDF2F0;
+    --sc-ink-soft:   #93A8A9;
+    --sc-accent:     #6FBF8E;
+    --sc-accent-ink: #07100F;
+    --sc-font-display:"Archivo", system-ui, sans-serif;
+    --sc-font-text:   "Geist", system-ui, sans-serif;
+
+    /* two grounds, one per side. They hold: no drift on this page. */
+    --raw:  #1D2225;
+    --pol:  #0B1417;
+
+    --div: 50vw;          /* divider position. The close collapses it.        */
+    --divw: 1px;
+  }
+
+  .skip{position:absolute;left:-9999px;top:0;z-index:200;
+    padding:12px 20px;border-radius:0 0 var(--sc-r-md) 0;
+    background:var(--sc-accent);color:var(--sc-accent-ink);
+    font:600 .9rem/1 var(--sc-font-text);text-decoration:none}
+  .skip:focus{left:0}
+  :focus-visible{outline:2px solid var(--sc-accent);outline-offset:3px}
+  html,body{background:var(--pol)}
+  body{overflow-x:hidden}
+
+  /* ── the two grounds ───────────────────────────────────────────────────── */
+  .grounds{position:fixed;inset:0;z-index:0;pointer-events:none}
+  .grounds::before,.grounds::after{content:'';position:absolute;top:0;bottom:0}
+  .grounds::before{left:0;width:var(--div);background:var(--raw)}
+  .grounds::after{left:var(--div);right:0;background:var(--pol)}
+
+  main{position:relative;z-index:1}
+
+  /* ── the divider IS the chrome ─────────────────────────────────────────── */
+  .div{
+    position:fixed;top:0;bottom:0;left:var(--div);width:0;z-index:60;
+    pointer-events:none;
+    opacity:calc(1 - var(--won, 0));
+    visibility:visible;
+  }
+  .div[data-gone]{visibility:hidden}
+  .div__line{
+    position:absolute;top:0;bottom:0;left:0;width:var(--divw);
+    background:color-mix(in oklab, var(--sc-ink) 20%, transparent);
+  }
+  .div__line::after{
+    content:'';position:absolute;left:0;top:0;width:100%;
+    height:calc(var(--read, 0) * 100%);
+    background:var(--sc-accent);
+  }
+  .div__side{
+    position:absolute;top:clamp(18px,3vh,30px);
+    font:500 .66rem/1 var(--sc-font-text);
+    letter-spacing:.17em;text-transform:uppercase;
+    color:var(--sc-ink-soft);white-space:nowrap;
+  }
+  .div__side--l{right:14px;text-align:right}
+  .div__side--r{left:14px}
+
+  .div__grit{
+    position:absolute;top:50%;left:14px;transform:translateY(-50%);
+    font:600 .72rem/1.5 var(--sc-font-text);letter-spacing:.14em;
+    text-transform:uppercase;color:var(--sc-accent);
+    opacity:0;transition:opacity .45s var(--sc-ease-out);white-space:nowrap;
+  }
+  .div__grit.on{opacity:1}
+  .div__grit b{display:block;font-size:1.5rem;letter-spacing:-.02em;
+    text-transform:none;font-variant-numeric:tabular-nums;color:var(--sc-ink)}
+
+  .div__nav{
+    position:absolute;bottom:clamp(76px,12vh,120px);left:14px;
+    display:flex;flex-direction:column;gap:9px;pointer-events:auto;
+  }
+  .div__nav a{
+    font:500 .74rem/1 var(--sc-font-text);letter-spacing:.02em;
+    color:var(--sc-ink-soft);text-decoration:none;white-space:nowrap;
+    transition:color .25s var(--sc-ease-out);
+  }
+  .div__nav a:hover{color:var(--sc-ink)}
+
+  .div__tel{
+    position:absolute;bottom:clamp(18px,3vh,30px);left:14px;
+    pointer-events:auto;display:inline-flex;align-items:center;gap:8px;
+    padding:11px 18px;border-radius:var(--sc-r-pill);
+    background:var(--sc-accent);color:var(--sc-accent-ink);
+    font:600 .88rem/1 var(--sc-font-text);letter-spacing:-.01em;
+    text-decoration:none;white-space:nowrap;
+    transition:transform .3s var(--sc-ease-out),filter .25s;
+  }
+  .div__tel:hover{transform:translateY(-2px);filter:brightness(1.08)}
+  .div__tel svg{width:14px;height:14px;flex:none}
+
+  /* ── the split layout every act inherits ───────────────────────────────── */
+  .split{
+    display:grid;
+    grid-template-columns:var(--div) 1fr;
+    min-height:100vh;align-items:center;
+  }
+  .side{padding:clamp(3rem,7vh,6rem) clamp(1.5rem,3.6vw,4rem)}
+  .side--l{text-align:right;justify-self:end;max-width:46ch}
+  .side--r{max-width:62ch}
+
+  .k{font:500 .66rem/1 var(--sc-font-text);letter-spacing:.17em;
+    text-transform:uppercase;color:var(--sc-ink-soft);margin:0 0 var(--sc-5)}
+
+  h1,h2,h3{font-family:var(--sc-font-display);text-wrap:balance;margin:0}
+  h1{font-size:var(--sc-t-4xl);line-height:.98;letter-spacing:-.038em;font-weight:700}
+  h2{font-size:var(--sc-t-3xl);line-height:1.02;letter-spacing:-.032em;font-weight:700}
+  h3{font-size:var(--sc-t-lg);line-height:1.2;letter-spacing:-.018em;font-weight:600}
+  p{font-family:var(--sc-font-text);line-height:var(--sc-leading-body);
+    color:var(--sc-ink-soft);text-wrap:pretty;margin:var(--sc-4) 0 0;max-width:46ch}
+  .side--l p{margin-left:auto}
+  .lead{color:var(--sc-ink);font-size:var(--sc-t-lg);line-height:1.42}
+
+  /* ── act 1 · the split ─────────────────────────────────────────────────── */
+  .split--hero{min-height:100svh}
+  .hero-b{font-size:var(--sc-t-2xl);line-height:1.04;letter-spacing:-.03em;
+    color:var(--sc-ink-soft);margin-bottom:var(--sc-5)}
+  .a1 .shot{position:relative;width:min(40vw,560px);aspect-ratio:4/3;
+    overflow:hidden;border-radius:2px;margin:0;
+    opacity:0;transform:scale(1.02);
+    animation:heroIn 1.1s var(--sc-ease-out) .15s forwards}
+  .a1 .shot img{width:100%;height:100%;object-fit:cover;object-position:center 72%}
+  @keyframes heroIn{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .a1 .shot{animation:none;opacity:1;transform:none}
+  }
+
+  /* a tall right column holds the argument; the left side stays with it */
+  .split--tall{align-items:start;min-height:0}
+  .side--stick{position:sticky;top:0;
+    min-height:100svh;display:flex;flex-direction:column;justify-content:center}
+
+  /* ── act 2 · what it costs. No photography, on purpose. ────────────────── */
+  .a2 .ledger{list-style:none;margin:var(--sc-6) 0 0;padding:0}
+  .a2 .ledger li{
+    display:flex;justify-content:space-between;gap:var(--sc-5);
+    padding:var(--sc-4) 0;border-bottom:1px solid var(--sc-hairline);
+    font:400 var(--sc-t-base)/1.5 var(--sc-font-text);color:var(--sc-ink-soft);
+  }
+  .a2 .ledger li span:last-child{color:var(--sc-ink);text-align:right;flex:none}
+
+  /* ── act 3 · THE PASSES. The signature move. ───────────────────────────── */
+  .pass{position:relative;width:100%;height:100vh;overflow:hidden}
+  .pass__plate{position:absolute;inset:0}
+  .pass__plate img{width:100%;height:100%;object-fit:cover;object-position:center 62%}
+  /* three real photographs of one job, cross-dissolved by --polish */
+  .pass__plate--raw  {opacity:calc(1 - clamp(0, var(--polish, 0) * 2.4, 1))}
+  .pass__plate--grind{opacity:calc(1 - abs(clamp(0, var(--polish, 0) * 2.2 - 1.1, 2)))}
+  .pass__plate--done {opacity:clamp(0, var(--polish, 0) * 2.3 - 1.3, 1)}
+  /* the grinder: a band travelling down the slab, done above it */
+  .pass__band{
+    position:absolute;left:0;right:0;height:clamp(48px,9vh,96px);
+    top:calc(var(--polish, 0) * 100%);transform:translateY(-50%);
+    background:linear-gradient(180deg,
+      transparent,
+      color-mix(in oklab, var(--sc-accent) 30%, transparent) 42%,
+      color-mix(in oklab, var(--sc-ink) 72%, transparent) 50%,
+      color-mix(in oklab, var(--sc-accent) 30%, transparent) 58%,
+      transparent);
+    opacity:calc(1 - clamp(0, var(--polish, 0) * 1.25 - 0.25, 1));
+    mix-blend-mode:screen;pointer-events:none;
+  }
+  .pass__sheen{
+    position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(104deg,
+      transparent 18%,
+      color-mix(in oklab, #FFFFFF 26%, transparent) 42%,
+      transparent 64%);
+    opacity:calc(var(--polish, 0) * 0.5);mix-blend-mode:screen;
+  }
+  .pass__cap{
+    position:absolute;left:clamp(1.5rem,3vw,3rem);bottom:clamp(1.5rem,4vh,3rem);
+    font:500 .72rem/1.5 var(--sc-font-text);letter-spacing:.12em;
+    text-transform:uppercase;color:var(--sc-ink);
+    text-shadow:0 1px 10px rgba(0,0,0,.8);
+  }
+
+  .ladder{list-style:none;margin:var(--sc-6) 0 0;padding:0;
+    display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+  .ladder li{
+    display:flex;align-items:center;gap:12px;
+    font:500 .84rem/1 var(--sc-font-text);color:var(--sc-ink-soft);
+    opacity:.3;transition:opacity .3s var(--sc-ease-out),color .3s;
+    font-variant-numeric:tabular-nums;
+  }
+  .ladder li.on{opacity:1;color:var(--sc-ink)}
+  .ladder li i{
+    display:block;height:2px;background:currentColor;font-style:normal;
+    width:calc(14px + var(--w) * 46px);border-radius:2px;
+  }
+
+  /* ── act 4 · the finishes ──────────────────────────────────────────────── */
+  .fin{display:flex;flex-direction:column;gap:clamp(2rem,5vh,4rem);
+    padding-block:clamp(4rem,10vh,8rem)}
+  .fin__row{display:grid;grid-template-columns:1fr;gap:var(--sc-4)}
+  .fin__row img{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;
+    object-position:center 66%;border-radius:2px}
+  .fin__row h3{margin-top:var(--sc-4)}
+  .fin__row p{margin-top:var(--sc-2)}
+  .fin__list{list-style:none;margin:var(--sc-6) 0 0;padding:0;
+    display:flex;flex-direction:column;gap:var(--sc-4);align-items:flex-end}
+  .fin__list li{font:600 var(--sc-t-lg)/1.25 var(--sc-font-display);
+    letter-spacing:-.02em;color:var(--sc-ink)}
+  .fin__list li em{display:block;font:400 .9rem/1.5 var(--sc-font-text);
+    font-style:normal;color:var(--sc-ink-soft);margin-top:3px}
+
+  /* ── act 5 · who's had it done ─────────────────────────────────────────── */
+  .score{font:700 clamp(4rem,11vw,9rem)/1 var(--sc-font-display);
+    letter-spacing:-.05em;color:var(--sc-ink);font-variant-numeric:tabular-nums}
+  .stars{color:#FFC043;letter-spacing:4px;font-size:1.1rem;margin-top:var(--sc-3)}
+  .revs{display:flex;flex-direction:column;gap:var(--sc-4);
+    padding-block:clamp(3rem,8vh,6rem)}
+  .rev{border-left:2px solid color-mix(in oklab, var(--sc-accent) 60%, transparent);
+    padding:var(--sc-1) 0 var(--sc-1) var(--sc-5)}
+  .rev p{margin:0;color:var(--sc-ink);font-size:var(--sc-t-base);max-width:54ch}
+  .rev cite{display:block;margin-top:var(--sc-3);font:500 .82rem/1 var(--sc-font-text);
+    font-style:normal;color:var(--sc-ink-soft);letter-spacing:.01em}
+
+  /* ── act 6 · the collapse ──────────────────────────────────────────────── */
+  
+  .close{position:relative;min-height:100svh;display:flex;flex-direction:column;
+    justify-content:center;padding:clamp(3rem,8vh,6rem) clamp(1.5rem,6vw,6rem) clamp(6rem,14vh,9rem)}
+  .close__bg{position:absolute;inset:0;overflow:hidden}
+  .close__bg img{width:100%;height:100%;object-fit:cover;object-position:center 64%;
+    opacity:calc(.18 + var(--won, 0) * .34);transition:opacity .2s linear}
+  .close__bg::after{content:'';position:absolute;inset:0;
+    background:linear-gradient(100deg,
+      var(--pol) 0%,
+      color-mix(in oklab, var(--pol) 86%, transparent) 38%,
+      color-mix(in oklab, var(--pol) 30%, transparent) 72%,
+      transparent 100%)}
+  .close__in{position:relative;z-index:1;max-width:min(56vw,16ch)}
+  .close h2{font-size:var(--sc-t-2xl);line-height:1.04}
+  .bignum{
+    display:inline-flex;align-items:center;gap:14px;margin-top:var(--sc-6);
+    white-space:nowrap;
+    font:700 clamp(1.75rem,4vw,3.1rem)/1 var(--sc-font-display);letter-spacing:-.04em;
+    color:var(--sc-ink);text-decoration:none;
+    transition:color .3s var(--sc-ease-out);
+  }
+  .bignum:hover{color:var(--sc-accent)}
+  .bignum svg{width:.68em;height:.68em;flex:none;color:var(--sc-accent)}
+  .close__meta{position:relative;z-index:1;margin-top:var(--sc-5);max-width:none;display:flex;flex-wrap:wrap;gap:var(--sc-2) var(--sc-6);
+    font:400 .92rem/1.6 var(--sc-font-text);color:var(--sc-ink-soft)}
+  .close__meta a{color:var(--sc-ink-soft)}
+  .foot{z-index:1;position:absolute;left:clamp(1.5rem,6vw,6rem);right:clamp(1.5rem,6vw,6rem);
+    bottom:clamp(1.5rem,4vh,3rem);display:flex;flex-wrap:wrap;gap:var(--sc-3) var(--sc-5);
+    justify-content:space-between;align-items:baseline;
+    padding-top:var(--sc-4);border-top:1px solid var(--sc-hairline);
+    font:400 .8rem/1.5 var(--sc-font-text);color:var(--sc-ink-soft)}
+  .foot a{color:var(--sc-ink-soft);text-decoration:none}
+  .foot a:hover{color:var(--sc-ink)}
+  .foot nav{display:flex;flex-wrap:wrap;gap:var(--sc-5)}
+
+  /* ── phone: the split rotates, the divider becomes a bottom bar ────────── */
+  @media (max-width:860px){
+    :root{--div:100vw}
+    .grounds::before{display:none}
+    .grounds::after{left:0;top:0}
+    .split{grid-template-columns:1fr;min-height:0;align-items:stretch}
+    .side{padding:clamp(2.5rem,7vh,4rem) var(--sc-5)}
+    .side--l{text-align:left;max-width:none}
+    .side--l p{margin-left:0}
+    h1{font-size:var(--sc-t-2xl)}
+    h2{font-size:var(--sc-t-2xl)}
+    .close h2{font-size:var(--sc-t-2xl)}
+    .a1 .shot{width:100%;aspect-ratio:4/3}
+    .ladder,.fin__list{align-items:flex-start}
+
+    .div{top:auto;bottom:0;left:0;right:0;width:auto;height:auto;
+      background:color-mix(in oklab, var(--sc-canvas) 92%, transparent);
+      backdrop-filter:blur(14px);
+      border-top:1px solid var(--sc-hairline);
+      padding:10px var(--sc-5) calc(10px + env(safe-area-inset-bottom));
+      display:flex;align-items:center;justify-content:space-between;gap:var(--sc-4)}
+    .div__line{top:0;bottom:auto;left:0;width:100%;height:2px;background:transparent}
+    .div__line::after{width:calc(var(--read,0) * 100%);height:2px}
+    .div__side,.div__nav{display:none}
+    .div__grit{position:static;transform:none;font-size:.62rem;
+      display:flex;align-items:baseline;gap:8px}
+    .div__grit b{font-size:1rem;display:inline}
+    .div__tel{position:static;margin-left:auto}
+    .side--stick{position:static;min-height:0;display:block}
+    .split--tall{gap:var(--sc-2)}
+    .split--hero{min-height:0}
+    .pass{height:68svh}
+    .pass__cap{font-size:.62rem}
+    .close{min-height:0;padding-bottom:clamp(8rem,22vh,12rem)}
+    .foot{position:static;margin-top:var(--sc-7)}
+    body{padding-bottom:72px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .pass__band{display:none}
+  }
+</style>
 </head>
 <body>
-<header class="hdr">
-  <div class="hdr-in">
-    <a class="brand" href="index.html">
-      <img src="assets/img/logo-light.png" alt="Polycrete logo" width="36" height="36">
-      <span>Polycrete</span>
-    </a>
-    <nav class="nav"><a href="index.html" class="on">Home</a><a href="services.html">Services</a><a href="work.html">Our Work</a><a href="areas.html">Areas</a><a href="contact.html">Contact</a></nav>
-    <div class="hdr-cta">
-      <a class="btn btn-ghost" href="#quote" data-quote>Get a quote</a>
-      <a class="hdr-tel" href="tel:+61468965583"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg><span>0468 965 583</span></a>
-      <button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
-    </div>
-  </div>
-</header>
-<div class="mnav"><a href="index.html">Home</a><a href="services.html">Services</a><a href="work.html">Our Work</a><a href="areas.html">Areas</a><a href="contact.html">Contact</a><a class="btn btn-primary" href="#quote" data-quote>Get a free quote</a></div>
-<section class="hero">
-  <div class="hero-bg"><img src="assets/img/terrazzo-living-room.webp" alt="Polished concrete floor through an open-plan living area" width="1440" height="1440" fetchpriority="high"></div>
-  <div class="hero-in">
-    <a class="gbadge" href="#reviews"><div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><b>5.0</b><span>from 4 Google reviews</span></a>
-    <h1>Concrete floors worth <em>looking at.</em></h1>
-    <p>Polished concrete, seamless epoxy and honed finishes for homes and businesses across Goulburn and the Southern Tablelands.</p>
-    <div class="hero-btns">
-      <a class="btn btn-primary btn-lg" href="tel:+61468965583"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> Call 0468 965 583</a>
-      <a class="btn btn-ghost btn-lg" href="#quote" data-quote>Get a free quote</a>
-    </div>
-  </div>
-</section>
 
-<div class="strip">
-  <div class="strip-in">
-    <div class="strip-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5L2.6 9.6l6.5-.9z"/></svg><div><b>5.0 on Google</b></div></div>
-    <div class="strip-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l8 3.3v5.4c0 5-3.4 9.3-8 10.3-4.6-1-8-5.3-8-10.3V5.8z"/><path d="M9 12l2.2 2.2L15.4 10"/></svg><div><b>Specialist finish work</b></div></div>
-    <div class="strip-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10.5c0 5.6-8 12-8 12s-8-6.4-8-12a8 8 0 1 1 16 0z"/><circle cx="12" cy="10.3" r="2.9"/></svg><div><b>Goulburn based</b></div></div>
-    <div class="strip-i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M12 6.8V12l3.4 2"/></svg><div><b>Mon &ndash; Fri, 7am &ndash; 5pm</b></div></div>
+<a class="skip" href="#top">Skip to content</a>
+<div class="grounds" aria-hidden="true"></div>
+<span data-sc-progress></span>
+
+<!-- The divider is the chrome: both side labels, the argument's progress,
+     the grit readout during the peak, the nav, and the phone. -->
+<div class="div" id="divider">
+  <div class="div__line"></div>
+  <span class="div__side div__side--l">What you have</span>
+  <span class="div__side div__side--r">What it becomes</span>
+
+  <div class="div__grit" id="grit" aria-live="off">
+    Pass <b id="gritnum">—</b>
   </div>
+
+  <nav class="div__nav" aria-label="Pages">
+    <a href="services.html">Services</a>
+    <a href="work.html">Our work</a>
+    <a href="areas.html">Areas</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <a class="div__tel" href="tel:+61468965583">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+    0468 965 583
+  </a>
 </div>
 
-<section>
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div><p class="eyebrow">What we do</p><h2>Four finishes, done properly.</h2>
-      <p class="lede">We grind, polish and coat concrete &mdash; that's the whole job, not a sideline. The prep underneath is where the finish is won.</p></div>
-      <a class="btn btn-ghost" href="services.html">All services <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    </div>
-    <div class="svc-grid"><a class="svc rv" href="services.html#polished">
-  <div class="svc-img"><img src="assets/img/polished-hallway-grey-800.webp" alt="Polished concrete" loading="lazy" width="800" height="600"></div>
-  <div class="svc-b"><h3>Polished concrete</h3><p>The slab you already have, ground back and polished to a mirror finish.</p>
-  <span class="svc-more">See more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
-</a>
-<a class="svc rv" href="services.html#epoxy">
-  <div class="svc-img"><img src="assets/img/epoxy-garage-cream-800.webp" alt="Seamless epoxy coating" loading="lazy" width="800" height="600"></div>
-  <div class="svc-b"><h3>Seamless epoxy coating</h3><p>A continuous resin floor with no joins for dirt to sit in.</p>
-  <span class="svc-more">See more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
-</a>
-<a class="svc rv" href="services.html#honed">
-  <div class="svc-img"><img src="assets/img/outdoor-bench-honed-800.webp" alt="Honed concrete" loading="lazy" width="800" height="600"></div>
-  <div class="svc-b"><h3>Honed concrete</h3><p>A softer, low-sheen finish with a smooth feel underfoot.</p>
-  <span class="svc-more">See more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
-</a>
-<a class="svc rv" href="services.html#prep">
-  <div class="svc-img"><img src="assets/img/ba-garage-mid-grinding-800.webp" alt="Floor prep" loading="lazy" width="800" height="600"></div>
-  <div class="svc-b"><h3>Floor prep</h3><p>Grinding, levelling and removing whatever was stuck down before.</p>
-  <span class="svc-more">See more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
-</a></div>
-  </div>
-</section>
+<main id="top">
 
-<section class="sec-dune">
-  <div class="wrap">
+  <!-- 1 · THE SPLIT · flow · device: parallax.
+       Composed on load: the grammar requires both headlines readable at once
+       on the first screen, so nothing here is scroll-gated. -->
+  <section class="a1" data-sc-act="flow">
+    <div class="split split--hero">
+      <div class="side side--l">
+        <p class="k">Goulburn &amp; the Southern Tablelands</p>
+        <h1>The slab is already there.</h1>
+        <p class="lead">Under the carpet, under the tiles, under the dust in the
+          garage. You paid for it once.</p>
+      </div>
+      <div class="side side--r">
+        <h2 class="hero-b">This is what it becomes.</h2>
+        <figure class="shot" data-sc-parallax="-0.3">
+          <img src="assets/img/terrazzo-living-room.webp" width="1440" height="1440"
+               alt="A polished concrete floor running through an open-plan living room" fetchpriority="high">
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · WHAT IT COSTS · flow · 1.4vh · device: kinetic.
+       Authored silence: no photography in this act, on purpose. -->
+  <section class="a2" data-sc-act="flow">
     <div class="split">
-      <div class="rv">
-        <p class="eyebrow">Before &amp; after</p>
-        <h2>Same slab. Different floor.</h2>
-        <p class="lede" style="margin-top:15px">This garage started as a stained, pitted slab. Ground back, prepped and finished with a flake epoxy coating &mdash; no joins, no grout, mops clean.</p>
-        <p style="margin-top:18px;font-size:.9rem;color:var(--text-mute)">Drag the handle to compare.</p>
-        <a class="btn btn-primary" style="margin-top:22px" href="work.html">See more of our work <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <div class="side side--l" data-sc-in data-sc-stagger="80">
+        <h2 data-sc-kinetic="lines">Floor coverings are a subscription.</h2>
+        <ul class="ledger">
+          <li><span>Carpet</span><span>Wears, stains, replaced</span></li>
+          <li><span>Tiles</span><span>Crack, grout goes black</span></li>
+          <li><span>Vinyl</span><span>Lifts, curls at the edges</span></li>
+          <li><span>Epoxy over bad prep</span><span>Peels in sheets</span></li>
+        </ul>
       </div>
-      <div class="ba rv" tabindex="0" role="slider" aria-label="Before and after comparison" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
-        <img src="assets/img/ba-garage-before-slab.webp" alt="Garage floor before: bare stained concrete slab">
-        <img class="ba-after" src="assets/img/ba-garage-after-flake.webp" alt="Garage floor after: flake epoxy coating">
-        <div class="ba-line"></div><div class="ba-grip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/></svg></div>
-        <span class="ba-tag l">Before</span><span class="ba-tag r">After</span>
+      <div class="side side--r" data-sc-in data-sc-stagger="80">
+        <h2 data-sc-kinetic="lines">Concrete is already paid for.</h2>
+        <p class="lead">It is the structural slab. It is not going anywhere, it does not
+          wear out, and it does not need replacing in nine years.</p>
+        <p>The only question is what the surface of it looks like. That part is
+          a day's work and a lot of patience, not a renovation.</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section>
-  <div class="wrap">
-    <div class="sec-head rv">
-      <div><p class="eyebrow">Recent jobs</p><h2>Floors we've finished.</h2></div>
-      <a class="btn btn-ghost" href="work.html">Full gallery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    </div>
-    <div class="rail-wrap rv">
-      <div class="rail"><figure><img src="assets/img/terrazzo-living-room-800.webp" alt="Polished concrete through an open-plan living area" loading="lazy"><figcaption>Polished concrete through an open-plan living area</figcaption></figure>
-<figure><img src="assets/img/polished-hallway-grey-800.webp" alt="High-gloss polished floor in a new build" loading="lazy"><figcaption>High-gloss polished floor in a new build</figcaption></figure>
-<figure><img src="assets/img/polished-floor-timber-room-800.webp" alt="Polished floor in a timber-lined room" loading="lazy"><figcaption>Polished floor in a timber-lined room</figcaption></figure>
-<figure><img src="assets/img/epoxy-garage-cream-800.webp" alt="Seamless epoxy coating in a double garage" loading="lazy"><figcaption>Seamless epoxy coating in a double garage</figcaption></figure>
-<figure><img src="assets/img/ba-garage-after-flake-800.webp" alt="Flake epoxy finish, garage floor" loading="lazy"><figcaption>Flake epoxy finish, garage floor</figcaption></figure>
-<figure><img src="assets/img/terrazzo-detail-800.webp" alt="Exposed aggregate detail in a polished floor" loading="lazy"><figcaption>Exposed aggregate detail in a polished floor</figcaption></figure>
-<figure><img src="assets/img/polished-floor-warm-kitchen-800.webp" alt="Warm-toned polished floor, kitchen and living" loading="lazy"><figcaption>Warm-toned polished floor, kitchen and living</figcaption></figure>
-<figure><img src="assets/img/island-bench-brick-800.webp" alt="Honed concrete benchtop over recycled brick" loading="lazy"><figcaption>Honed concrete benchtop over recycled brick</figcaption></figure></div>
-      <div class="rail-nav">
-        <button class="rnb" data-rail="prev" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
-        <button class="rnb" data-rail="next" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <!-- 3 · THE PASSES · pin · 4.0vh · PEAK · signature move: the pass ladder -->
+  <section id="passes" data-sc-act="pin" data-sc-span="4" data-sc-dwell="0.2">
+    <div data-sc-stage class="split">
+      <div class="side side--l">
+        <p class="k">The peak</p>
+        <h2>It gets ground back, over and over.</h2>
+        <p>The same floor, the same machine, each pass finer than the last. Nothing
+          is poured and nothing is covered. Keep scrolling.</p>
+        <ul class="ladder" id="ladder" aria-hidden="true">
+          <li style="--w:0"><i></i>30 grit</li>
+          <li style="--w:.14"><i></i>50</li>
+          <li style="--w:.28"><i></i>100</li>
+          <li style="--w:.42"><i></i>200</li>
+          <li style="--w:.56"><i></i>400</li>
+          <li style="--w:.70"><i></i>800</li>
+          <li style="--w:.85"><i></i>1500</li>
+          <li style="--w:1"><i></i>3000</li>
+        </ul>
       </div>
-    </div>
-  </div>
-</section>
-
-<section class="sec-ink" id="reviews">
-  <div class="wrap">
-    <div class="rev-top rv">
-      <div class="rev-score">5.0</div>
-      <div class="rev-meta"><div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p>4 reviews on Google</p></div>
-    </div>
-    <div class="rev-grid"><article class="rev rv">
-          <div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p>Amazing work from Cory and Michaela. Excellent attention detail. Great value for a brilliant job. Really happy with the outcome.</p>
-          <footer>
-            <div class="rev-av">RW</div>
-            <div><div class="rev-nm">Rachel and Bill White</div><div class="rev-dt">a year ago &middot; Google</div></div>
-          </footer>
-        </article>
-<article class="rev rv">
-          <div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p>Very professional 100% quality work couldn&rsquo;t be happier with the finished result highly recommend</p>
-          <footer>
-            <div class="rev-av">JK</div>
-            <div><div class="rev-nm">Jarrod Kadwell</div><div class="rev-dt">2 years ago &middot; Google</div></div>
-          </footer>
-        </article>
-<article class="rev rv">
-          <div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p>I rang polycrete for some information about a renovation I was doing and Corey was amazing. He sent me videos. Gave me all sorts of information , So helpful and friendly.</p>
-          <footer>
-            <div class="rev-av">DQ</div>
-            <div><div class="rev-nm">Debbie Quinn</div><div class="rev-dt">a year ago &middot; Google</div></div>
-          </footer>
-        </article>
-<article class="rev rv">
-          <div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-          <p>Great job. Very happy with quality and workmanship</p>
-          <footer>
-            <div class="rev-av">MC</div>
-            <div><div class="rev-nm">M C</div><div class="rev-dt">2 years ago &middot; Google</div></div>
-          </footer>
-        </article></div>
-  </div>
-</section>
-
-<section class="sec-dune">
-  <div class="wrap">
-    <div class="split">
-      <div class="rv">
-        <p class="eyebrow">Where we work</p>
-        <h2>Goulburn and the Southern Tablelands.</h2>
-        <p class="lede" style="margin-top:15px">Based on Mulwaree St in Goulburn and out across the district most weeks. If you're not on the list, ask anyway.</p>
-        <div class="chips"><span class="chip">Goulburn</span><span class="chip">Marulan</span><span class="chip">Crookwell</span><span class="chip">Taralga</span><span class="chip">Collector</span><span class="chip">Gunning</span><span class="chip">Tarago</span><span class="chip">Bungonia</span><span class="chip">Breadalbane</span><span class="chip">Towrang</span><span class="chip">Run-O-Waters</span><span class="chip">Southern Tablelands</span></div>
-      </div>
-      <div class="map-wrap rv">
-        <iframe src="https://www.google.com/maps?q=50+Mulwaree+St,+Goulburn+NSW+2580&z=14&output=embed" loading="lazy" title="Polycrete location in Goulburn" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="quote">
-  <div class="wrap">
-    <div class="split">
-      <div class="rv">
-        <p class="eyebrow">Get a quote</p>
-        <h2>Tell us about the floor.</h2>
-        <p class="lede" style="margin-top:15px">Send through the basics and Corey will come back to you &mdash; usually the same day, with a straight answer about what's possible and what it costs.</p>
-        <p style="margin-top:26px"><a class="hdr-tel" style="font-size:1.05rem;padding:14px 24px" href="tel:+61468965583"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0468 965 583</a></p>
-        <p style="margin-top:20px;font-size:.92rem;color:var(--text-mute)">50 Mulwaree St, Goulburn NSW 2580<br>Monday to Friday, 7am &ndash; 5pm</p>
-      </div>
-      <div class="rv"><form class="qform" action="https://formsubmit.co/jahnovcar90@gmail.com" method="POST">
-  <input type="hidden" name="_subject" value="New quote request from the Polycrete website">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="hidden" name="_template" value="table">
-  <input type="text" name="_honey" style="display:none">
-  <div class="fld-2">
-    <div class="fld"><label for="qn">Your name</label><input id="qn" name="Name" type="text" required autocomplete="name"></div>
-    <div class="fld"><label for="qp">Phone</label><input id="qp" name="Phone" type="tel" required autocomplete="tel"></div>
-  </div>
-  <div class="fld-2">
-    <div class="fld"><label for="qs">Suburb</label><input id="qs" name="Suburb" type="text" required></div>
-    <div class="fld"><label for="qj">Job type</label>
-      <select id="qj" name="Job type"><option>Polished concrete</option><option>Seamless epoxy coating</option><option>Honed concrete</option><option>Floor prep</option><option>Not sure yet</option></select></div>
-  </div>
-  <div class="fld"><label for="qd">What are you after?</label>
-    <textarea id="qd" name="Job details" placeholder="Rough size, where it is, and when you'd like it done."></textarea></div>
-  <button class="btn btn-primary btn-lg" type="submit">Send my quote request <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-  <p class="fine">No obligation. Corey usually gets back the same day.</p>
-</form></div>
-    </div>
-  </div>
-</section>
-<footer class="ftr">
-  <div class="wrap">
-    <div class="ftr-grid">
-      <div>
-        <a class="brand" href="index.html">
-          <img src="assets/img/logo-light.png" alt="Polycrete logo" width="36" height="36">
-          <span>Polycrete</span>
-        </a>
-        <p class="ftr-blurb">Polished concrete, epoxy coatings and honed finishes across Goulburn and the Southern Tablelands.</p>
-        <div class="socials">
-          <a href="https://www.facebook.com/people/Polycrete/100090141532431/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg></a>
-          <a href="https://www.instagram.com/polycrete_/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.2"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="1.2" fill="currentColor" stroke="none"/></svg></a>
+      <div class="side side--r" style="padding:0;max-width:none">
+        <div class="pass" id="pass">
+          <div class="pass__plate pass__plate--raw">
+            <img src="assets/img/ba-garage-before-slab.webp" width="1170" height="1170"
+                 alt="A bare, stained concrete slab before any work" loading="lazy">
+          </div>
+          <div class="pass__plate pass__plate--grind">
+            <img src="assets/img/ba-garage-mid-grinding.webp" width="1440" height="1440"
+                 alt="The same floor mid-job, a dust-extracted grinder working across it" loading="lazy">
+          </div>
+          <div class="pass__plate pass__plate--done">
+            <img src="assets/img/ba-garage-after-flake.webp" width="1440" height="1440"
+                 alt="The same floor finished, an even flake coating edge to edge" loading="lazy">
+          </div>
+          <div class="pass__band" aria-hidden="true"></div>
+          <div class="pass__sheen" aria-hidden="true"></div>
+          <p class="pass__cap">One garage in Goulburn. Three real photographs.</p>
         </div>
       </div>
-      <div>
-        <h4>Services</h4>
-        <ul>
-          <li><a href="services.html#polished">Polished concrete</a></li>
-          <li><a href="services.html#epoxy">Seamless epoxy coating</a></li>
-          <li><a href="services.html#honed">Honed concrete</a></li>
-          <li><a href="services.html#prep">Floor prep</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Explore</h4>
-        <ul>
-          <li><a href="work.html">Our work</a></li>
-          <li><a href="areas.html">Areas we serve</a></li>
-          <li><a href="contact.html">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Get in touch</h4>
-        <ul>
-          <li><a href="tel:+61468965583">0468 965 583</a></li>
-          <li><a href="https://www.google.com/maps/place/Polycrete/@-34.7501657,149.7295498,14z" target="_blank" rel="noopener">50 Mulwaree St, Goulburn NSW 2580</a></li>
-          <li>Monday &ndash; Friday, 7am &ndash; 5pm</li>
-        </ul>
-      </div>
     </div>
-    <div class="ftr-btm">
-      <span>&copy; 2026 Polycrete, Goulburn NSW.</span>
-      <span>Rated 5.0 from 4 Google reviews.</span>
-    </div>
-  </div>
-</footer>
+  </section>
 
-<div class="callbar">
-  <a class="btn btn-primary" href="tel:+61468965583"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> Call now</a>
-  <a class="btn btn-ghost" href="#quote" data-quote>Get a quote</a>
-</div>
-<script src="assets/js/site.js"></script>
+  <!-- 4 · THE FINISHES · flow · 1.6vh · device: parallax -->
+  <section data-sc-act="flow">
+    <div class="split split--tall">
+      <div class="side side--l side--stick" data-sc-in>
+        <p class="k">Four finishes</p>
+        <h2>What you can actually ask for.</h2>
+        <ul class="fin__list">
+          <li>Polished concrete<em>Ground back to a mirror. Gloss, satin or matt.</em></li>
+          <li>Seamless epoxy<em>No joins, no grout. For garages and workshops.</em></li>
+          <li>Honed concrete<em>Low sheen. Floors, benchtops, outdoor areas.</em></li>
+          <li>Floor prep<em>Glue, paint and old coatings off. Then it's ready.</em></li>
+        </ul>
+      </div>
+      <div class="side side--r" style="max-width:none">
+        <div class="fin">
+          <figure class="fin__row" data-sc-parallax="-0.5">
+            <img src="assets/img/polished-hallway-grey-800.webp" width="800" height="500"
+                 alt="High-gloss polished concrete reflecting a hallway" loading="lazy">
+            <h3>Polished</h3>
+            <p>Aggregate exposure to suit the room. Sealed and ready to live on.</p>
+          </figure>
+          <figure class="fin__row" data-sc-parallax="-0.2">
+            <img src="assets/img/epoxy-garage-cream-800.webp" width="800" height="500"
+                 alt="A seamless cream epoxy floor in a double garage" loading="lazy">
+            <h3>Epoxy</h3>
+            <p>Resists oil, chemicals and hot tyres. Mops clean in minutes.</p>
+          </figure>
+          <figure class="fin__row" data-sc-parallax="0.2">
+            <img src="assets/img/outdoor-bench-honed-800.webp" width="800" height="500"
+                 alt="A honed concrete outdoor bench and barbecue surround" loading="lazy">
+            <h3>Honed</h3>
+            <p>Smooth underfoot, no glare. The benchtop finish as well as the floor one.</p>
+          </figure>
+          <figure class="fin__row" data-sc-parallax="0.5">
+            <img src="assets/img/ba-garage-mid-grinding-800.webp" width="800" height="500"
+                 alt="Dust-extracted grinding in progress on a garage floor" loading="lazy">
+            <h3>Prep</h3>
+            <p>The part nobody sees, and the reason the finish on top lasts.</p>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · WHO'S HAD IT DONE · flow · 1.4vh · device: count. Real figures only. -->
+  <section data-sc-act="flow">
+    <div class="split split--tall">
+      <div class="side side--l side--stick" data-sc-in>
+        <p class="k">On Google</p>
+        <div class="score"><span data-sc-count="0 5.0" data-sc-count-at="0.05 0.45">0.0</span></div>
+        <div class="stars" aria-label="5 out of 5 stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p>Every review Polycrete has, and every one of them five stars.</p>
+      </div>
+      <div class="side side--r" style="max-width:none">
+        <div class="revs">
+          <blockquote class="rev" data-sc-in>
+            <p>Amazing work from Cory and Michaela. Excellent attention detail. Great value
+              for a brilliant job. Really happy with the outcome.</p>
+            <cite>Rachel and Bill White</cite>
+          </blockquote>
+          <blockquote class="rev" data-sc-in>
+            <p>Very professional 100% quality work couldn&rsquo;t be happier with the finished
+              result highly recommend</p>
+            <cite>Jarrod Kadwell</cite>
+          </blockquote>
+          <blockquote class="rev" data-sc-in>
+            <p>I rang polycrete for some information about a renovation I was doing and Corey
+              was amazing. He sent me videos. Gave me all sorts of information , So helpful
+              and friendly.</p>
+            <cite>Debbie Quinn</cite>
+          </blockquote>
+          <blockquote class="rev" data-sc-in>
+            <p>Great job. Very happy with quality and workmanship</p>
+            <cite>M C</cite>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · THE COLLAPSE · pin · 1.4vh · the divider travels out, the finished
+       side takes the full width, the number is the last thing standing. -->
+  <section id="call" data-sc-act="flow">
+    <div>
+      <div class="close">
+        <div class="close__bg" aria-hidden="true">
+          <img src="assets/img/polished-hallway-grey.webp" width="1153" height="2048"
+               alt="" loading="lazy">
+        </div>
+        <div class="close__in">
+          <h2>Ring Corey. Ask what&rsquo;s under there.</h2>
+          <a class="bignum" href="tel:+61468965583" data-sc-cue="0.1" data-sc-rise="0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+            0468 965 583
+          </a>
+        </div>
+        <div class="close__meta">
+            <span>Monday to Friday, 7am&ndash;5pm</span>
+            <a href="https://www.google.com/maps/place/Polycrete/@-34.7501657,149.7295498,14z" target="_blank" rel="noopener">50 Mulwaree St, Goulburn</a>
+            <a href="contact.html">Or send the details instead</a>
+        </div>
+        <footer class="foot">
+          <span>&copy; 2026 Polycrete, Goulburn NSW</span>
+          <nav aria-label="Footer">
+            <a href="services.html">Services</a>
+            <a href="work.html">Our work</a>
+            <a href="areas.html">Areas</a>
+            <a href="contact.html">Contact</a>
+            <a href="https://www.instagram.com/polycrete_/" target="_blank" rel="noopener">Instagram</a>
+          </nav>
+        </footer>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="assets/scrollcraft.js"></script>
+<script>
+(function () {
+  'use strict';
+  ScrollCraft.mount(document.body);
+
+  var root    = document.documentElement;
+  var divider = document.getElementById('divider');
+  var passAct = document.getElementById('passes');
+  var closeAct= document.getElementById('call');
+  var pass    = document.getElementById('pass');
+  var gritBox = document.getElementById('grit');
+  var gritNum = document.getElementById('gritnum');
+  var steps   = [].slice.call(document.querySelectorAll('#ladder li'));
+  var GRITS   = [30, 50, 100, 200, 400, 800, 1500, 3000];
+  var shown   = -1, gritOn = false, lastCollapse = -1;
+
+  function actP(el) {
+    var v = parseFloat(getComputedStyle(el).getPropertyValue('--sc-p'));
+    return isNaN(v) ? 0 : v;
+  }
+
+  /* THE SIGNATURE MOVE
+     One value, --polish, drives the whole right-hand surface: which of the
+     three real photographs is showing, how far the grinder band has travelled,
+     and how much sheen the finished floor has. The grit ladder on the left and
+     the readout in the divider ride the same value, so the visitor is doing
+     the passes themselves. */
+  function frame() {
+    if (passAct && pass) {
+      var p = actP(passAct);
+      // ease the ends so the first and last grit each get real dwell
+      var e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      pass.style.setProperty('--polish', e.toFixed(4));
+
+      var live = p > 0.015 && p < 0.985;
+      if (live !== gritOn) {
+        gritOn = live;
+        gritBox.classList.toggle('on', live);
+      }
+      if (live) {
+        var i = Math.min(GRITS.length - 1, Math.floor(e * GRITS.length));
+        if (i !== shown) {
+          shown = i;
+          gritNum.textContent = GRITS[i];
+          for (var s = 0; s < steps.length; s++) {
+            steps[s].classList.toggle('on', s <= i);
+          }
+        }
+      }
+      root.style.setProperty('--read', Math.max(0, Math.min(1, p)).toFixed(3));
+    }
+
+    /* THE CLOSE: the divider travels to the left edge and the finished side
+       takes the whole screen. This is the ending, so it gets the easing. */
+    if (closeAct) {
+      var r = closeAct.getBoundingClientRect();
+      var c = 1 - Math.max(0, Math.min(1, r.top / (window.innerHeight || 1)));
+      var k = c < 0.5 ? 4 * c * c * c : 1 - Math.pow(-2 * c + 2, 3) / 2;
+      if (Math.abs(k - lastCollapse) > 0.002) {
+        lastCollapse = k;
+        root.style.setProperty('--won', k.toFixed(3));
+        if (window.matchMedia('(min-width: 861px)').matches) {
+          root.style.setProperty('--div', (50 - k * 50).toFixed(2) + 'vw');
+          root.style.setProperty('--divw', (1 - k).toFixed(3) + 'px');
+          if (k > 0.985) { divider.setAttribute('data-gone', ''); }
+          else { divider.removeAttribute('data-gone'); }
+        } else {
+          root.style.setProperty('--div', '100vw');
+          root.style.setProperty('--divw', '1px');
+          divider.removeAttribute('data-gone');
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
 </body>
 </html>

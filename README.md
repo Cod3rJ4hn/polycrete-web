@@ -8,8 +8,8 @@ concrete finishing business in Goulburn, NSW.
 Plain HTML, CSS and vanilla JS. No framework, no build step — what's in
 the repo is what gets served. Nothing loads from a third-party CDN:
 
-- Smooth wheel scrolling: Lenis 1.1.13 (MIT), vendored in `assets/js/vendor/`.
-  Desktop only; touch devices keep native scrolling.
+- Scrolling is the browser's own. Only the in-page jumps (quote button,
+  rating badge) are eased.
 - Fonts: Archivo (display) and Geist (text), self-hosted woff2 (OFL) in `assets/fonts/`.
 - Motion rules: only `transform` and `opacity` are animated, one easing family,
   every control has hover, press and focus states, reduced motion respected.

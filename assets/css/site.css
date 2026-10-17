@@ -624,6 +624,17 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   transition-delay:calc(var(--i,0) * 85ms)}
 .js .rv.in{opacity:1;transform:none}
 
+/* heading groups: label first, then the heading rises line by line from
+   behind a mask, then everything after it. Plays once. */
+.js .rv.hd{opacity:1;transform:none;transition:none}
+.js .rv.hd > :not(.hd-h){opacity:0}
+.js .rv.hd.in > :not(.hd-h){opacity:1;animation:hdIn .95s var(--out) backwards;animation-delay:var(--d,0ms)}
+@keyframes hdIn{from{opacity:0;transform:translate3d(0,18px,0)}}
+.ln{display:inline-block;overflow:hidden;vertical-align:bottom;padding:0 .03em .1em;margin:0 -.03em -.1em}
+.ln > span{display:inline-block;transform:translate3d(0,112%,0);
+  transition:transform 1.05s var(--out);transition-delay:var(--d,0ms)}
+.rv.hd.in .ln > span{transform:none}
+
 /* ==========================================================================
    PAGE TRANSITIONS — the header and call bar stay put, the page cross-fades
    ========================================================================== */

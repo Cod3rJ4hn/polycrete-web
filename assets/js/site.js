@@ -141,6 +141,57 @@
      is revealed too, never left invisible behind you */
   var pending = [].slice.call(document.querySelectorAll('.rv'));
   if (reduced) { pending.forEach(function (el) { el.classList.add('in'); }); pending = []; }
+
+  /* heading groups: split the heading into words so it can rise line by line,
+     and give every element in the group its place in the sequence */
+  function splitHeading(h) {
+    if (h._words) return h._words;
+    h.setAttribute('aria-label', h.textContent.replace(/\s+/g, ' ').trim());
+    var words = [];
+    (function walk(node) {
+      [].slice.call(node.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) {
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function (part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
+            var o = document.createElement('span'), i = document.createElement('span');
+            o.className = 'ln'; o.setAttribute('aria-hidden', 'true');
+            i.textContent = part; o.appendChild(i); frag.appendChild(o); words.push(o);
+          });
+          node.replaceChild(frag, n);
+        } else if (n.nodeType === 1 && n.tagName !== 'BR') { walk(n); }
+      });
+    })(h);
+    h._words = words;
+    return words;
+  }
+  function sequence(g) {
+    var t = 0;
+    [].slice.call(g.children).forEach(function (k) {
+      if (/^H[12]$/.test(k.tagName)) {
+        k.classList.add('hd-h');
+        var top = null, line = -1;
+        splitHeading(k).forEach(function (w) {
+          var y = w.offsetTop;
+          if (top === null || Math.abs(y - top) > 4) { line++; top = y; }
+          w.style.setProperty('--d', (t + line * 95) + 'ms');
+        });
+        t += (line + 1) * 95 + 140;
+      } else {
+        k.style.setProperty('--d', t + 'ms');
+        t += 90;
+      }
+    });
+  }
+  var groups = reduced ? [] : pending.filter(function (el) {
+    return !el.closest('.hero') && el.querySelector(':scope > h1, :scope > h2');
+  });
+  groups.forEach(function (g) { g.classList.add('hd'); sequence(g); });
+  /* once the real fonts are in, lines may have re-wrapped: re-time them */
+  if (groups.length && document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { groups.forEach(sequence); });
+  }
   function revealCheck() {
     if (!pending.length) return;
     var edge = vh * 0.92, keep = [];

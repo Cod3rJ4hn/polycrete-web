@@ -258,7 +258,8 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .hero .grain{z-index:2}
 .hero-in{position:relative;z-index:3;width:100%;max-width:var(--max);margin:0 auto;
   padding:calc(var(--hdr) + 96px) var(--gut) clamp(56px,7vw,88px);will-change:transform,opacity}
-.hero h1{max-width:13ch;color:#fff}
+.hero h1{max-width:17ch;color:#fff}
+.hero h1 em{font-style:normal;color:var(--accent-soft)}
 .hero p{margin-top:var(--s5);font-size:clamp(1.05rem,1.6vw,1.2rem);color:rgba(234,240,238,.86);max-width:48ch}
 .hero-btns{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
 

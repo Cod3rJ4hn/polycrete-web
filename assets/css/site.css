@@ -378,7 +378,7 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
    ========================================================================== */
 .pass{background:var(--canvas);color:var(--on-ink);padding:clamp(64px,9vw,120px) 0}
 .pass-wrap{width:min(100%,1440px);margin:0 auto;padding:0 var(--gut)}
-.pass .eyebrow{color:var(--on-ink-mute);font-size:.78rem;letter-spacing:.15em}
+.pass .eyebrow{color:#fff;font-size:clamp(1.05rem,1.5vw,1.35rem);letter-spacing:.12em;padding-left:clamp(20px,3vw,40px)}
 .pass-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);
   gap:clamp(24px,4vw,64px);margin-top:clamp(28px,4vw,56px)}
 .pass-list{list-style:none;margin:0;padding:0}
@@ -716,6 +716,7 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
 
   .pass-grid{grid-template-columns:minmax(0,1fr);gap:0}
   .pass-side{display:none}
+  .pass .eyebrow{padding-left:0}
   .pass-step{min-height:0;padding:32px 0;border-left:0;border-top:1px solid rgba(234,240,238,.12)}
   .pass-step:first-child{padding-top:0;border-top:0}
   .pass-inline{display:block;position:relative;aspect-ratio:16/10;margin:0 0 24px;overflow:hidden;border-radius:var(--r)}

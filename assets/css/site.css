@@ -400,13 +400,14 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .pass-sticky{position:sticky;top:calc(var(--hdr) + 24px)}
 .pass-panel{position:relative;width:100%;height:min(70svh,680px);overflow:hidden;
   border-radius:var(--r-lg);background:var(--ink-2);isolation:isolate}
-.pass-panel::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
+.pass-panel::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
   background:linear-gradient(to top,rgba(14,30,35,.7),transparent 45%)}
-.pass-image{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;
-  object-position:center 58%;opacity:0;transform:scale(1.04);
-  transition:opacity 1s ease-out,transform 1s ease-out}
-.pass-image.on{opacity:1;transform:scale(1)}
-.pass-meter{position:absolute;z-index:2;left:20px;right:20px;bottom:18px;display:flex;gap:8px}
+.pass-image{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;object-fit:cover;
+  object-position:center 58%;opacity:0;transition:opacity 0s linear 1s}
+/* the incoming photo fades in over the outgoing one, which holds until it is covered,
+   so nothing moves or dips: it just looks like the floor changing */
+.pass-image.on{z-index:1;opacity:1;transition:opacity 1s ease-out}
+.pass-meter{position:absolute;z-index:3;left:20px;right:20px;bottom:18px;display:flex;gap:8px}
 .pass-meter-segment{display:block;flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.22);overflow:hidden}
 .pass-meter i{display:block;width:100%;height:100%;border-radius:inherit;background:var(--accent-soft);
   transform:scaleX(0);transform-origin:left center;transition:transform .7s ease-out}

@@ -613,6 +613,9 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   background:
     radial-gradient(70% 75% at 50% 72%,rgba(14,30,35,.85) 0%,rgba(14,30,35,.5) 52%,transparent 85%),
     linear-gradient(180deg,rgba(14,30,35,.6) 0%,rgba(14,30,35,.15) 38%,rgba(14,30,35,.85) 100%)}
+/* static logo at the top of each page header (home has the chiselled version) */
+.phero-logo{display:block;width:clamp(120px,11vw,160px);height:auto;aspect-ratio:477/486;margin:0 auto var(--s5);
+  filter:drop-shadow(0 2px 7px rgba(6,16,15,.55))}
 /* page headers are centred, like the home hero */
 .phero .wrap{text-align:center}
 .phero .crumb{justify-content:center}

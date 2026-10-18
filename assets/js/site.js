@@ -482,75 +482,36 @@
   var heroIn = document.querySelector('.hero-in');
   var heroEl = document.querySelector('.hero, .phero.has-img');
 
-  var track = document.querySelector('.pass-track');
-  var stageEl = track && track.querySelector('.pass-stage');
-  var pSteps = track ? track.querySelectorAll('.pass-step') : [];
-  var stageImages = track ? track.querySelectorAll('.pass-image') : [];
   var mobilePass = window.matchMedia('(max-width: 860px)');
-  var stage = 0;
-  var trackTop = track ? track.getBoundingClientRect().top + scrollY() : 0;
-  var trackTravel = track && stageEl ? track.offsetHeight - stageEl.offsetHeight : 0;
-  var stepWindow = track && track.querySelector('.pass-step-window');
-  var progressSegments = track ? track.querySelectorAll('.pass-meter-segment i') : [];
-  var stepPitch = trackTravel / 2;
 
-  function sizePassSteps() {
-    if (!track || !stepWindow || !trackTravel) return;
-    stepPitch = trackTravel / 2;
-    track.style.setProperty('--pass-step-pitch', stepPitch + 'px');
-    stepWindow.style.height = mobilePass.matches ? 'auto' : 'min(70svh, 680px)';
-  }
-  sizePassSteps();
-
-  function setStage(index) {
-    stage = index;
-    for (var i = 0; i < pSteps.length; i++) {
-      var active = i === index;
-      pSteps[i].classList.toggle('on', active);
-      pSteps[i].setAttribute('aria-hidden', active ? 'false' : 'true');
-      if (active) pSteps[i].setAttribute('aria-current', 'step');
-      else pSteps[i].removeAttribute('aria-current');
+  /* The passes: the image is sticky in CSS and the page scrolls natively.
+     Whichever step crosses the middle band of the viewport becomes active. */
+  (function () {
+    var steps = document.querySelectorAll('.pass-step');
+    if (!steps.length) return;
+    var images = document.querySelectorAll('.pass-panel .pass-image');
+    var segs = document.querySelectorAll('.pass-meter-segment i');
+    var current = -1;
+    function setStage(n) {
+      if (n === current) return;
+      current = n;
+      for (var i = 0; i < steps.length; i++) {
+        steps[i].classList.toggle('on', i === n);
+        steps[i].classList.toggle('done', i <= n);
+      }
+      for (var j = 0; j < images.length; j++) {
+        images[j].classList.toggle('on', j === n);
+        images[j].setAttribute('aria-hidden', j === n ? 'false' : 'true');
+      }
+      for (var k = 0; k < segs.length; k++) segs[k].classList.toggle('on', k <= n);
     }
-    for (var j = 0; j < stageImages.length; j++) {
-      var shown = j === index;
-      stageImages[j].classList.toggle('on', shown);
-      stageImages[j].setAttribute('aria-hidden', shown ? 'false' : 'true');
-    }
-  }
-  var processSnapLock = false;
-  var processSnapTimer = 0;
-  window.addEventListener('wheel', function (event) {
-    if (!track || mobilePass.matches || reduced || !trackTravel) return;
-    var y = scrollY();
-    var trackEnd = trackTop + trackTravel;
-    if (y < trackTop - 2 || y > trackEnd + 2 || !event.deltaY) return;
-    if (processSnapLock) {
-      event.preventDefault();
-      window.clearTimeout(processSnapTimer);
-      processSnapTimer = window.setTimeout(function () { processSnapLock = false; }, 260);
-      return;
-    }
-    if (busy) return;
-
-    var currentStage = clamp(Math.round((y - trackTop) / trackTravel * 2), 0, 2);
-    var nextStage = currentStage + (event.deltaY > 0 ? 1 : -1);
-    if (nextStage < 0 || nextStage > 2) return;
-
-    event.preventDefault();
-    processSnapLock = true;
-    scrollToY(trackTop + trackTravel * nextStage / 2, function () {
-      window.clearTimeout(processSnapTimer);
-      processSnapTimer = window.setTimeout(function () { processSnapLock = false; }, 260);
-    });
-  }, { passive: false, capture: true });
-  window.addEventListener('resize', function () {
-    vh = window.innerHeight;
-    if (track && stageEl) {
-      trackTop = track.getBoundingClientRect().top + scrollY();
-      trackTravel = track.offsetHeight - stageEl.offsetHeight;
-      sizePassSteps();
-    }
-  }, { passive: true });
+    setStage(0);
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) setStage(Number(e.target.dataset.index)); });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    steps.forEach(function (s) { io.observe(s); });
+  })();
 
   var tickId = 0;
   function queueTick() {
@@ -574,21 +535,6 @@
       }
     }
 
-    if (track && trackTravel > 0) {
-      var progress = clamp((y - trackTop) / trackTravel, 0, 1);
-      var nextStage = mobilePass.matches
-        ? Math.min(2, Math.floor(progress * 3))
-        : Math.min(2, Math.floor(progress * 2 + 0.00001));
-      if (!mobilePass.matches) {
-        track.style.setProperty('--pass-shift', Math.min(progress * trackTravel, stepPitch * 2) + 'px');
-      } else {
-        track.style.setProperty('--pass-shift', '0px');
-      }
-      for (var k = 0; k < progressSegments.length; k++) {
-        progressSegments[k].style.transform = 'scaleX(' + clamp(progress * 3 - k, 0, 1).toFixed(3) + ')';
-      }
-      if (nextStage !== stage) setStage(nextStage);
-    }
     if (keepTicking) queueTick();
   }
   if (lenis) lenis.on('scroll', queueTick);

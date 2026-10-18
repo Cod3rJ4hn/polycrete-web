@@ -385,7 +385,8 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .pass .eyebrow{color:var(--on-ink-mute);font-size:.78rem;letter-spacing:.15em}
 .pass-step-window{height:min(70svh,680px);overflow:hidden}
 .pass-steps{display:flex;flex-direction:column;transform:translate3d(0,calc(-1 * var(--pass-shift, 0px)),0);will-change:transform}
-.pass-step{box-sizing:border-box;flex:0 0 var(--pass-step-pitch,66svh);min-height:var(--pass-step-pitch,66svh);
+.pass-step{box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;
+  flex:0 0 var(--pass-step-pitch,66svh);min-height:var(--pass-step-pitch,66svh);
   opacity:.3;transition:opacity .45s ease}
 .pass-step.on{opacity:1}
 .pass-number{display:block;font:700 clamp(3rem,5vw,4.4rem)/.9 var(--f-display);

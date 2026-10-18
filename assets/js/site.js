@@ -158,8 +158,6 @@
   /* ---------------------------------------------------------------------
      Reveals — once only, never replayed
      --------------------------------------------------------------------- */
-  /* checked every frame against position, so anything you jump or fling past
-     is revealed too, never left invisible behind you */
   var pending = [].slice.call(document.querySelectorAll('.rv'));
   if (reduced) { pending.forEach(function (el) { el.classList.add('in'); }); pending = []; }
 
@@ -221,6 +219,17 @@
       else keep.push(pending[i]);
     }
     pending = keep;
+  }
+  if (pending.length && 'IntersectionObserver' in window) {
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('in');
+        revealObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px 8% 0px' });
+    pending.forEach(function (el) { revealObserver.observe(el); });
+    pending = [];
   }
 
   /* ---------------------------------------------------------------------
@@ -478,6 +487,7 @@
   var meter = track && track.querySelector('.pass-meter i');
   var pSteps = track ? track.querySelectorAll('.pass-step') : [];
   var frameCount = 121, frameBase = frame && frame.getAttribute('data-frame-base');
+  var mobilePass = window.matchMedia('(max-width: 860px)');
   var frameCache = Object.create(null), requestedFrame = 1, lastFrame = 1;
   var polish = 0, lastPolish = -1, stage = 0;
 
@@ -487,7 +497,7 @@
   function paintFrame(image) {
     if (!frame || !image || !image.naturalWidth) return;
     frame.src = image.src;
-    if (framePanel) framePanel.style.setProperty('--pass-frame-bg', 'url("' + image.src + '")');
+    if (framePanel && !mobilePass.matches) framePanel.style.setProperty('--pass-frame-bg', 'url("' + image.src + '")');
   }
   function cacheFrame(index) {
     var image = frameCache[index];
@@ -508,23 +518,32 @@
     if (cached.complete && cached.naturalWidth) {
       paintFrame(cached);
     }
-    /* Keep a short buffer ahead of the scroll direction so frame changes are ready. */
+    if (mobilePass.matches) { lastFrame = index; return; }
+    /* Keep only a small directional buffer; decoded 1080p frames use several MB each. */
     var direction = index >= lastFrame ? 1 : -1;
-    for (var ahead = 1; ahead <= 8; ahead++) {
+    for (var ahead = 1; ahead <= 3; ahead++) {
       var next = index + direction * ahead;
       if (next < 1 || next > frameCount) continue;
       cacheFrame(next);
     }
     Object.keys(frameCache).forEach(function (key) {
-      if (Math.abs(Number(key) - index) > 12) delete frameCache[key];
+      if (Math.abs(Number(key) - index) > 3) delete frameCache[key];
     });
     lastFrame = index;
   }
 
+  var tickId = 0;
+  function queueTick() {
+    if (!tickId) tickId = requestAnimationFrame(function (time) {
+      tickId = 0;
+      tick(time);
+    });
+  }
   function tick(time) {
-    revealCheck();
+    if (!('IntersectionObserver' in window)) revealCheck();
     if (lenis) lenis.raf(time);
     var y = scrollY();
+    var keepTicking = !!lenis;
 
     if (heroEl && !reduced) {
       var hh = heroEl.offsetHeight;
@@ -539,22 +558,25 @@
       var r = track.getBoundingClientRect();
       var travel = r.height - vh;
       var raw = travel > 0 ? clamp(-r.top / travel, 0, 1) : 0;
-      polish = reduced ? 0 : lerp(polish, raw, 0.22);
+      polish = reduced || mobilePass.matches ? raw : lerp(polish, raw, 0.22);
+      if (!reduced && !mobilePass.matches && Math.abs(polish - raw) > 0.0005) keepTicking = true;
       if (Math.abs(polish - lastPolish) > 0.0005) {
         lastPolish = polish;
         var e = polish;
-        var nextFrame = 1 + Math.round(e * (frameCount - 1));
+        var st = mobilePass.matches ? (e < 1 / 3 ? 0 : e < 2 / 3 ? 1 : 2) : (e < 0.083 ? 0 : e < 0.583 ? 1 : 2);
+        var nextFrame = mobilePass.matches ? (st === 0 ? 1 : st === 1 ? 61 : 121) : 1 + Math.round(e * (frameCount - 1));
         if (nextFrame !== lastFrame) showFrame(nextFrame);
         meter.style.transform = 'scaleX(' + e.toFixed(4) + ')';
         /* Match the copy changes to the actual transition points in the sequence. */
-        var st = e < 0.083 ? 0 : e < 0.583 ? 1 : 2;
         if (st !== stage) {
           stage = st;
           for (var k = 0; k < pSteps.length; k++) pSteps[k].classList.toggle('on', k === st);
         }
       }
     }
-    requestAnimationFrame(tick);
+    if (keepTicking) queueTick();
   }
-  requestAnimationFrame(tick);
+  if (lenis) lenis.on('scroll', queueTick);
+  else window.addEventListener('scroll', queueTick, { passive: true });
+  queueTick();
 })();

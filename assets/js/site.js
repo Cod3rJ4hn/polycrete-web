@@ -431,16 +431,6 @@
           { transform: 'translate(' + (p.x + Math.cos(a) * vv) + 'px,' + (p.y + Math.sin(a) * vv + 60) + 'px) rotate(' + ((rnd() - .5) * 540) + 'deg)', opacity: 0 }
         ], { duration: 520 + rnd() * 260, easing: 'cubic-bezier(.2,.6,.5,1)' }).onfinish = function () { sh.remove(); };
       }
-      for (var j = 0; j < 8; j++) {
-        var c = document.createElementNS(NS, 'circle');
-        c.setAttribute('r', 0.9 + rnd() * 2.4); c.setAttribute('fill', '#ffffff');
-        c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); fx.appendChild(c);
-        var a2 = rnd() * Math.PI * 2, v2 = 14 + rnd() * 34;
-        c.animate([
-          { transform: 'translate(0,0) scale(.6)', opacity: .5 },
-          { transform: 'translate(' + (Math.cos(a2) * v2) + 'px,' + (Math.sin(a2) * v2 - 6) + 'px) scale(1.7)', opacity: 0 }
-        ], { duration: 620 + rnd() * 300, easing: 'ease-out' }).onfinish = function () { c.remove(); };
-      }
     }
 
     var timers = [];

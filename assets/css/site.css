@@ -706,7 +706,8 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   .pass-frame{object-fit:cover}
   .pass-txt .pass-title{font-size:clamp(2rem,9vw,3rem)}
   .pass-txt .pass-detail{font-size:.98rem;margin-top:0}
-  .pass-meter{margin-top:var(--s4)}
+  .pass-meter{display:none}
+  .hero-logo #clBlobs{filter:none}
 
   .showcase{grid-template-columns:1fr}
   .show-media{display:none}

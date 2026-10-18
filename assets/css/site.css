@@ -699,13 +699,11 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   .callbar{display:flex}
   body{padding-bottom:78px}
 
-  .pass-track{height:240svh}
+  .pass-track{height:300svh}
   .pass-stage{display:block}
   .pass-txt{width:100%;padding:0 var(--gut)}
-  .pass-panel::before{content:'';position:absolute;inset:-24px;z-index:0;
-    background-image:var(--pass-frame-bg);background-position:center;background-size:cover;
-    filter:blur(18px) brightness(.48);transform:scale(1.06)}
-  .pass-frame{object-fit:contain}
+  .pass-panel{background:#12272d}
+  .pass-frame{object-fit:cover}
   .pass-txt .pass-title{font-size:clamp(2rem,9vw,3rem)}
   .pass-txt .pass-detail{font-size:.98rem;margin-top:0}
   .pass-meter{margin-top:var(--s4)}

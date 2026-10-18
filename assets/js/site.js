@@ -156,6 +156,35 @@
   }
 
   /* ---------------------------------------------------------------------
+     Header — slides away on the way down, returns on the way up
+     --------------------------------------------------------------------- */
+  (function () {
+    var hdr = document.querySelector('.hdr');
+    if (!hdr) return;
+    var lastY = window.pageYOffset, hidden = false, ticking = false;
+    function setHidden(h) {
+      if (h === hidden) return;
+      hidden = h;
+      hdr.classList.toggle('hdr-hide', h);
+    }
+    function update() {
+      ticking = false;
+      var y = window.pageYOffset;
+      var dy = y - lastY;
+      if (mnav && mnav.classList.contains('open')) { setHidden(false); lastY = y; return; }
+      if (y < 80) setHidden(false);
+      else if (dy > 6) setHidden(true);
+      else if (dy < -6) setHidden(false);
+      if (Math.abs(dy) > 6 || y < 80) lastY = y;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    /* keyboard users tabbing into the header always get it back */
+    hdr.addEventListener('focusin', function () { setHidden(false); });
+  })();
+
+  /* ---------------------------------------------------------------------
      Reveals — once only, never replayed
      --------------------------------------------------------------------- */
   var pending = [].slice.call(document.querySelectorAll('.rv'));

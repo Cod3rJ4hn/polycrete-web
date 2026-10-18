@@ -186,7 +186,9 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 /* ==========================================================================
    HEADER
    ========================================================================== */
-.hdr{position:sticky;top:0;z-index:100;height:var(--hdr);view-transition-name:hdr}
+.hdr{position:sticky;top:0;z-index:100;height:var(--hdr);view-transition-name:hdr;
+  transition:transform .45s cubic-bezier(.22,1,.36,1);will-change:transform}
+.hdr.hdr-hide{transform:translate3d(0,-100%,0)}
 .hdr::before{content:'';position:absolute;inset:0;z-index:-1;
   background:rgba(14,30,35,.8);
   backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);

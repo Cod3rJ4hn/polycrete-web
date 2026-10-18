@@ -412,7 +412,6 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .pass-meter i{display:block;width:100%;height:100%;border-radius:inherit;background:var(--accent-soft);
   transform:scaleX(0);transform-origin:left center;transition:transform .7s ease-out}
 .pass-meter i.on{transform:scaleX(1)}
-  transform:scaleX(0);transform-origin:left center;transition:transform .18s linear}
 
 /* ==========================================================================
    RAIL, BEFORE/AFTER, GALLERY, LIGHTBOX
@@ -425,6 +424,7 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .rail figcaption{margin-top:11px;font-size:.88rem;color:var(--text-mute)}
 @media (hover:hover){.rail figure:hover .media img{transform:scale(1.04)}}
 .rail-nav{display:flex;gap:10px;margin-top:var(--s5)}
+.rail-dots{display:none}
 /* the slideshow runs out past the content column to the edge of the screen */
 [data-rail]{--side:calc(max(0px,(100vw - var(--max)) / 2) + var(--gut))}
 [data-rail] .rail{margin:0 calc(var(--side) * -1);padding:0 var(--side) 6px;scroll-padding-inline:var(--side)}
@@ -723,6 +723,13 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   .pass-inline{display:block;position:relative;aspect-ratio:16/10;margin:0 0 24px;overflow:hidden;border-radius:var(--r)}
   .pass-inline img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 58%}
   .pass-number{font-size:4rem}
+  /* work slideshow: one photo per view, swipe to move, dots below */
+  [data-rail] .rail figure{flex:0 0 100%;scroll-snap-stop:always}
+  [data-rail] .rail-nav{display:none}
+  .rail-dots{display:flex;justify-content:center;gap:8px;margin-top:var(--s5)}
+  .rail-dots i{display:block;width:8px;height:8px;border-radius:50%;background:var(--ink);opacity:.22;
+    transform:scale(1);transition:opacity .35s ease,transform .35s cubic-bezier(.22,1,.36,1)}
+  .rail-dots i.on{opacity:1;transform:scaleX(2.6)}
   .hero-logo #clBlobs{filter:none}
 
   .showcase{grid-template-columns:1fr}

@@ -238,6 +238,24 @@
   document.querySelectorAll('[data-rail]').forEach(function (wrap) {
     var rail = wrap.querySelector('.rail');
     function step() { var f = rail.querySelector('figure'); return f ? f.getBoundingClientRect().width + 16 : 340; }
+    /* dots for the one-photo-at-a-time slideshow on phones */
+    var figs = rail.querySelectorAll('figure');
+    var dots = document.createElement('div');
+    dots.className = 'rail-dots';
+    dots.setAttribute('aria-hidden', 'true');
+    for (var d = 0; d < figs.length; d++) dots.appendChild(document.createElement('i'));
+    wrap.appendChild(dots);
+    var dotEls = dots.children, lastDot = -1;
+    function syncDots() {
+      var idx = Math.round(rail.scrollLeft / step());
+      idx = Math.max(0, Math.min(figs.length - 1, idx));
+      if (idx === lastDot) return;
+      lastDot = idx;
+      for (var k = 0; k < dotEls.length; k++) dotEls[k].classList.toggle('on', k === idx);
+    }
+    rail.addEventListener('scroll', syncDots, { passive: true });
+    window.addEventListener('resize', syncDots, { passive: true });
+    syncDots();
     wrap.querySelectorAll('[data-dir]').forEach(function (b) {
       b.addEventListener('click', function () {
         rail.scrollBy({ left: step() * (+b.getAttribute('data-dir')), behavior: reduced ? 'auto' : 'smooth' });

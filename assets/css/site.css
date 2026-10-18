@@ -432,15 +432,15 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
   .pass-list{grid-area:1/1;align-self:start;position:sticky;top:var(--T);z-index:3;
     width:var(--pw);height:var(--ph);margin:0 auto;pointer-events:none}
   .pass-step{position:absolute;left:0;right:0;bottom:48px;min-height:0;
-    padding:0 clamp(28px,3.5vw,56px);opacity:0;transform:translate3d(0,14px,0);
-    transition:opacity .4s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+    padding:0 clamp(28px,3.5vw,56px);opacity:0;
+    transition:opacity .2s ease}
   .pass-step:first-child{padding-top:0}
-  .pass-step.on{opacity:1;transform:none}
+  .pass-step.on{opacity:1;transition:opacity .3s ease .2s}
   .pass-number{font-size:clamp(2.8rem,4.4vw,4.4rem)}
   .pass-step .pass-detail{color:rgba(234,240,238,.9);max-width:40ch}
   /* a touch larger than the frame so the photo's edges (and anything stamped on them) stay out of view;
-     it drifts slightly as you scroll between steps */
-  .pass-image{will-change:transform,opacity;transform:translate3d(0,calc((var(--p,0) - var(--i,0)) * -22px),0) scale(1.09)}
+     it never moves: stages only cross-fade, as if the floor itself is changing */
+  .pass-image{will-change:opacity;transform:scale(1.09)}
 }
 
 /* ==========================================================================

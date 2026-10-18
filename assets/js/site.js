@@ -588,6 +588,7 @@
       steps.forEach(function (st) { io.observe(st); });
     }
 
+    var FULL = 0.94;                       // bar counts as full a hair before the lock lands
     var stickyTop = 0;
     function measure() { stickyTop = parseFloat(getComputedStyle(sticky).top) || 0; }
     measure();
@@ -605,10 +606,10 @@
       if (mobilePass.matches) return;
       var g = geom();
       var p = clamp((g.y - g.p0) / g.step, 0, n - 1);
-      panel.style.setProperty('--p', p.toFixed(3));
       /* the bars follow the scroll position, so they always fill one after the other */
-      for (var k = 0; k < segs.length; k++) segs[k].style.setProperty('--f', clamp(p - k + 1, 0, 1).toFixed(3));
-      setStage(Math.round(p));
+      for (var k = 0; k < segs.length; k++) segs[k].style.setProperty('--f', clamp((p - k + 1) / FULL, 0, 1).toFixed(3));
+      /* the photo and text move to a stage exactly when that stage's bar is full */
+      setStage(clamp(Math.floor(p + (1 - FULL) + 1e-6), 0, n - 1));
     };
 
     /* ---- the lock ---- */

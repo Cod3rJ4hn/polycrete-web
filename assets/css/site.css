@@ -418,8 +418,12 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 /* Desktop: one pinned stage. The photo sits centred on the page, the step text sits on
    the photo, and the section is tall enough to give each step one screen of scroll. */
 @media (min-width:861px){
-  .pass-grid{--n:3;--ph:min(76svh,740px);--pw:min(1160px,100%);
-    --T:calc(var(--hdr) + (100svh - var(--hdr) - var(--ph)) / 2);
+  .pass-wrap{--ph:min(76svh,740px);--pw:min(1160px,100%);
+    --T:calc(var(--hdr) + (100svh - var(--hdr) - var(--ph)) / 2)}
+  /* the heading stays pinned above the photo for the whole section */
+  .pass .eyebrow{position:sticky;top:max(calc(var(--hdr) + 12px),calc(var(--T) - 52px));z-index:5;
+    width:var(--pw);margin-left:auto;margin-right:auto;padding-left:0}
+  .pass-grid{--n:3;
     display:grid;grid-template-columns:minmax(0,1fr);gap:0;
     height:calc(var(--ph) + (var(--n) - 1) * 100svh)}
   .pass-side{grid-area:1/1;position:relative;z-index:1}

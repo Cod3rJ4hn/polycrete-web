@@ -588,7 +588,7 @@
       steps.forEach(function (st) { io.observe(st); });
     }
 
-    var FULL = 0.94;                       // bar counts as full a hair before the lock lands
+    var FILL_MS = 410, EMPTY_MS = 260;     // keep in step with the .pass-meter transition in the CSS
     var stickyTop = 0;
     function measure() { stickyTop = parseFloat(getComputedStyle(sticky).top) || 0; }
     measure();
@@ -602,14 +602,41 @@
       return { y: y, p0: p0, step: step, end: p0 + step * (n - 1) };
     }
 
+    /* Each scroll step plays one whole bar filling (a timed animation, not tied to scroll position).
+       When it is full the photo and text change. Steps always run one after the other. */
+    var shown = 0, working = false, inited = false, curP = 0;
+    function advance() {
+      if (working) return;
+      var want = shown;
+      if (curP > shown + 0.15 && shown < n - 1) want = shown + 1;
+      else if (curP < shown - 0.15 && shown > 0) want = shown - 1;
+      if (want === shown) return;
+      working = true;
+      var up = want > shown;
+      segs[up ? want : shown].classList.toggle('on', up);
+      setTimeout(function () {
+        shown = want;
+        setStage(shown);
+        working = false;
+        advance();                           // catch up if the scroll is further along
+      }, up ? FILL_MS : EMPTY_MS);
+    }
+
     passTick = function () {
       if (mobilePass.matches) return;
       var g = geom();
-      var p = clamp((g.y - g.p0) / g.step, 0, n - 1);
-      /* the bars follow the scroll position, so they always fill one after the other */
-      for (var k = 0; k < segs.length; k++) segs[k].style.setProperty('--f', clamp((p - k + 1) / FULL, 0, 1).toFixed(3));
-      /* the photo and text move to a stage exactly when that stage's bar is full */
-      setStage(clamp(Math.floor(p + (1 - FULL) + 1e-6), 0, n - 1));
+      curP = clamp((g.y - g.p0) / g.step, 0, n - 1);
+      if (!inited) {                         // first look: show where we already are, no animation
+        inited = true;
+        shown = Math.round(curP);
+        var meter = segs[0] && segs[0].parentNode.parentNode;
+        if (meter) meter.style.setProperty('--snap', '1');
+        for (var k = 0; k < segs.length; k++) segs[k].classList.toggle('on', k <= shown);
+        setStage(shown);
+        if (meter) { void meter.offsetWidth; meter.style.removeProperty('--snap'); }
+        return;
+      }
+      advance();
     };
 
     /* ---- the lock ---- */

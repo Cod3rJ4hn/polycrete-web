@@ -483,74 +483,33 @@
   var heroEl = document.querySelector('.hero, .phero.has-img');
 
   var track = document.querySelector('.pass-track');
-  var frame = track && track.querySelector('.pass-frame');
-  var framePanel = track && track.querySelector('.pass-panel');
-  var meter = track && track.querySelector('.pass-meter i');
+  var stageEl = track && track.querySelector('.pass-stage');
   var pSteps = track ? track.querySelectorAll('.pass-step') : [];
-  var frameCount = 121, frameBase = frame && frame.getAttribute('data-frame-base');
+  var stageImages = track ? track.querySelectorAll('.pass-image') : [];
   var mobilePass = window.matchMedia('(max-width: 860px)');
-  var frameCache = Object.create(null), requestedFrame = 1, lastFrame = 1;
-  var polish = 0, lastPolish = -1, stage = 0;
+  var stage = 0;
   var trackTop = track ? track.getBoundingClientRect().top + scrollY() : 0;
-  var trackTravel = track ? track.offsetHeight - vh : 0;
+  var trackTravel = track && stageEl ? track.offsetHeight - stageEl.offsetHeight : 0;
 
-  function framePath(index) {
-    return frameBase + String(index).padStart(3, '0') + '.jpg';
-  }
-  function paintFrame(image) {
-    if (!frame || !image || !image.naturalWidth) return;
-    frame.src = image.src;
-    if (framePanel && !mobilePass.matches) framePanel.style.setProperty('--pass-frame-bg', 'url("' + image.src + '")');
-  }
-  function cacheFrame(index) {
-    var image = frameCache[index];
-    if (image) return image;
-    image = new Image();
-    image.decoding = 'async';
-    image.onload = function () {
-      if (requestedFrame === index) paintFrame(image);
-    };
-    frameCache[index] = image;
-    image.src = framePath(index);
-    return image;
-  }
-  function showFrame(index) {
-    if (!frame || !frameBase) return;
-    requestedFrame = index;
-    var cached = cacheFrame(index);
-    if (cached.complete && cached.naturalWidth) {
-      paintFrame(cached);
+  function setStage(index) {
+    stage = index;
+    for (var i = 0; i < pSteps.length; i++) {
+      var active = i === index;
+      pSteps[i].classList.toggle('on', active);
+      if (active) pSteps[i].setAttribute('aria-current', 'step');
+      else pSteps[i].removeAttribute('aria-current');
     }
-    if (mobilePass.matches) { lastFrame = index; return; }
-    /* Keep only a small directional buffer; decoded 1080p frames use several MB each. */
-    var direction = index >= lastFrame ? 1 : -1;
-    for (var ahead = 1; ahead <= 3; ahead++) {
-      var next = index + direction * ahead;
-      if (next < 1 || next > frameCount) continue;
-      cacheFrame(next);
+    for (var j = 0; j < stageImages.length; j++) {
+      var shown = j === index;
+      stageImages[j].classList.toggle('on', shown);
+      stageImages[j].setAttribute('aria-hidden', shown ? 'false' : 'true');
     }
-    Object.keys(frameCache).forEach(function (key) {
-      if (Math.abs(Number(key) - index) > 3) delete frameCache[key];
-    });
-    lastFrame = index;
-  }
-
-  if (track && mobilePass.matches && 'IntersectionObserver' in window) {
-    var stillPreloader = new IntersectionObserver(function (entries) {
-      if (!entries[0].isIntersecting) return;
-      [61, 121].forEach(function (index) {
-        var image = cacheFrame(index);
-        if (image.decode) image.decode().catch(function () {});
-      });
-      stillPreloader.disconnect();
-    }, { rootMargin: '150% 0px' });
-    stillPreloader.observe(track);
   }
   window.addEventListener('resize', function () {
     vh = window.innerHeight;
-    if (track) {
+    if (track && stageEl) {
       trackTop = track.getBoundingClientRect().top + scrollY();
-      trackTravel = track.offsetHeight - vh;
+      trackTravel = track.offsetHeight - stageEl.offsetHeight;
     }
   }, { passive: true });
 
@@ -576,37 +535,10 @@
       }
     }
 
-    if (track) {
-      var raw;
-      if (mobilePass.matches) {
-        raw = trackTravel > 0 ? clamp((y - trackTop) / trackTravel, 0, 1) : 0;
-        var mobileStage = raw < 1 / 3 ? 0 : raw < 2 / 3 ? 1 : 2;
-        if (mobileStage !== stage) {
-          stage = mobileStage;
-          var stillFrame = stage === 0 ? 1 : stage === 1 ? 61 : 121;
-          if (stillFrame !== lastFrame) showFrame(stillFrame);
-          for (var m = 0; m < pSteps.length; m++) pSteps[m].classList.toggle('on', m === stage);
-        }
-      } else {
-        var r = track.getBoundingClientRect();
-        var travel = r.height - vh;
-        raw = travel > 0 ? clamp(-r.top / travel, 0, 1) : 0;
-        polish = reduced ? raw : lerp(polish, raw, 0.22);
-        if (!reduced && Math.abs(polish - raw) > 0.0005) keepTicking = true;
-      }
-      if (!mobilePass.matches && Math.abs(polish - lastPolish) > 0.0005) {
-        lastPolish = polish;
-        var e = polish;
-        var st = e < 0.083 ? 0 : e < 0.583 ? 1 : 2;
-        var nextFrame = 1 + Math.round(e * (frameCount - 1));
-        if (nextFrame !== lastFrame) showFrame(nextFrame);
-        meter.style.transform = 'scaleX(' + e.toFixed(4) + ')';
-        /* Match the copy changes to the actual transition points in the sequence. */
-        if (st !== stage) {
-          stage = st;
-          for (var k = 0; k < pSteps.length; k++) pSteps[k].classList.toggle('on', k === st);
-        }
-      }
+    if (track && trackTravel > 0) {
+      var progress = clamp((y - trackTop) / trackTravel, 0, 1);
+      var nextStage = Math.min(2, Math.floor(progress * 3));
+      if (nextStage !== stage) setStage(nextStage);
     }
     if (keepTicking) queueTick();
   }

@@ -14,7 +14,7 @@
 <link rel="preload" href="assets/fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/mr-dafoe-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/site.css?v=process-copy-v2">
+<link rel="stylesheet" href="assets/css/site.css?v=sticky-process-v1">
 <script>document.documentElement.className='js'</script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"LocalBusiness","name":"Polycrete",
@@ -119,28 +119,32 @@
 <section class="pass" aria-label="How it's done">
   <div class="pass-track">
     <div class="pass-stage">
-      <div class="grain" aria-hidden="true"></div>
-      <div class="pass-txt">
-        <p class="eyebrow">How it&rsquo;s done</p>
-        <div class="pass-steps">
-          <div class="pass-step on">
-            <h2 class="pass-title">Bare slab</h2>
-            <p class="pass-detail">The raw concrete slab, ready for its surface to be transformed.</p>
-          </div>
-          <div class="pass-step">
-            <h2 class="pass-title">Ground</h2>
-            <p class="pass-detail">Grinding reveals the natural stone in the concrete and prepares it for polishing.</p>
-          </div>
-          <div class="pass-step">
-            <h2 class="pass-title">Polished</h2>
-            <p class="pass-detail">The surface is polished to a smooth, reflective finish that brings the aggregate to life.</p>
+      <div class="pass-layout">
+        <div class="pass-txt">
+          <p class="eyebrow">How it&rsquo;s done</p>
+          <div class="pass-steps">
+            <article class="pass-step on" aria-current="step">
+              <span class="pass-number">01</span>
+              <div><h2 class="pass-title">Bare slab</h2>
+                <p class="pass-detail">The raw concrete slab, ready for its surface to be transformed.</p></div>
+            </article>
+            <article class="pass-step">
+              <span class="pass-number">02</span>
+              <div><h2 class="pass-title">Ground</h2>
+                <p class="pass-detail">Grinding reveals the natural stone and prepares the concrete for polishing.</p></div>
+            </article>
+            <article class="pass-step">
+              <span class="pass-number">03</span>
+              <div><h2 class="pass-title">Polished</h2>
+                <p class="pass-detail">The surface is sealed and polished to bring the aggregate to life.</p></div>
+            </article>
           </div>
         </div>
-        <div class="pass-meter" aria-hidden="true"><i></i></div>
-      </div>
-      <div class="pass-panel" style="--pass-frame-bg:url('assets/img/process-frames/ezgif-frame-001.jpg')">
-        <img class="pass-frame" src="assets/img/process-frames/ezgif-frame-001.jpg" data-frame-base="assets/img/process-frames/ezgif-frame-" alt="A concrete floor changing from a raw slab to exposed aggregate and a reflective polished finish" width="1920" height="1080" loading="lazy" decoding="async" fetchpriority="low">
-        <div class="pass-edge" aria-hidden="true"></div>
+        <div class="pass-panel" aria-label="Three stages of a polished concrete floor">
+          <img class="pass-image on" src="assets/img/process-stages/bare-slab-800.jpg" srcset="assets/img/process-stages/bare-slab-800.jpg 800w, assets/img/process-stages/bare-slab-1600.jpg 1600w" sizes="(max-width: 860px) 100vw, 66vw" alt="Bare concrete slab inside a timber-framed home" width="1600" height="900" loading="lazy" decoding="async" fetchpriority="low">
+          <img class="pass-image" src="assets/img/process-stages/ground-800.jpg" srcset="assets/img/process-stages/ground-800.jpg 800w, assets/img/process-stages/ground-1600.jpg 1600w" sizes="(max-width: 860px) 100vw, 66vw" alt="Concrete floor ground to expose its natural aggregate" width="1600" height="900" loading="lazy" decoding="async" fetchpriority="low" aria-hidden="true">
+          <img class="pass-image" src="assets/img/process-stages/sealed-800.jpg" srcset="assets/img/process-stages/sealed-800.jpg 800w, assets/img/process-stages/sealed-1600.jpg 1600w" sizes="(max-width: 860px) 100vw, 66vw" alt="Polished and sealed concrete floor reflecting the timber-framed home" width="1600" height="900" loading="lazy" decoding="async" fetchpriority="low" aria-hidden="true">
+        </div>
       </div>
     </div>
   </div>
@@ -294,6 +298,6 @@
   <a class="btn btn-primary" href="tel:+61468965583"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> Call now</a>
   <a class="btn btn-ghost" href="contact.html#quote" data-quote>Get a quote</a>
 </div>
-<script src="assets/js/site.js?v=mobile-performance-v3"></script>
+<script src="assets/js/site.js?v=sticky-process-v1"></script>
 </body>
 </html>

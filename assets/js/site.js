@@ -577,7 +577,6 @@
         images[j].classList.toggle('on', j === i);
         images[j].setAttribute('aria-hidden', j === i ? 'false' : 'true');
       }
-      for (var k = 0; k < segs.length; k++) segs[k].classList.toggle('on', k <= i);
     }
     setStage(0);
 
@@ -589,10 +588,15 @@
       steps.forEach(function (st) { io.observe(st); });
     }
 
+    var stickyTop = 0;
+    function measure() { stickyTop = parseFloat(getComputedStyle(sticky).top) || 0; }
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
+    window.addEventListener('load', measure);
+
     function geom() {
-      var top = parseFloat(getComputedStyle(sticky).top) || 0;
       var y = window.pageYOffset;
-      var p0 = y + grid.getBoundingClientRect().top - top;          // scroll position where step 1 locks
+      var p0 = y + grid.getBoundingClientRect().top - stickyTop;          // scroll position where step 1 locks
       var step = n > 1 ? (grid.offsetHeight - sticky.offsetHeight) / (n - 1) : 1;
       return { y: y, p0: p0, step: step, end: p0 + step * (n - 1) };
     }
@@ -602,20 +606,27 @@
       var g = geom();
       var p = clamp((g.y - g.p0) / g.step, 0, n - 1);
       panel.style.setProperty('--p', p.toFixed(3));
+      /* the bars follow the scroll position, so they always fill one after the other */
+      for (var k = 0; k < segs.length; k++) segs[k].style.setProperty('--f', clamp(p - k + 1, 0, 1).toFixed(3));
       setStage(Math.round(p));
     };
 
     /* ---- the lock ---- */
     function lockOn() { return !reduced && finePointer && !mobilePass.matches; }
-    function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
-    var gliding = false, consumed = false, lastWheel = 0;
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    var easeOutQuart = easeOutCubic;
+    var gliding = false, consumed = false, queued = false, lastWheel = 0;
 
     function glideTo(y) {
-      var dur = 0.95;
+      var dur = clamp(Math.abs(y - window.pageYOffset) / 1500, 0.42, 0.62);
       gliding = true; busy = true;
       var finished = false;
-      function finish() { if (finished) return; finished = true; gliding = false; busy = false; }
-      setTimeout(finish, dur * 1000 + 350);
+      function finish() {
+        if (finished) return;
+        finished = true; gliding = false; busy = false;
+        if (queued) { queued = false; stepDown(); }
+      }
+      setTimeout(finish, dur * 1000 + 250);
       if (lenis) {
         lenis.scrollTo(y, { duration: dur, easing: easeOutQuart, lock: true, force: true, onComplete: finish });
         return;
@@ -647,7 +658,11 @@
       var now = performance.now();
       if (now - lastWheel >= 160) consumed = false;          // a pause = a new gesture
       lastWheel = now;
-      if (gliding) { e.preventDefault(); e.stopPropagation(); return; }
+      if (gliding) {
+        e.preventDefault(); e.stopPropagation();
+        if (e.deltaY >= 3 && !consumed) { queued = true; consumed = true; }   // a fresh scroll mid-glide: do it next
+        return;
+      }
       if (e.deltaY <= 0) { consumed = false; return; }       // up is free scroll
       if (e.deltaY < 3) return;
       if (consumed) {                                         // same gesture still going: hold

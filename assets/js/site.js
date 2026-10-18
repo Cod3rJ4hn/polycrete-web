@@ -393,7 +393,8 @@
     var NS = 'http://www.w3.org/2000/svg';
     var blobs = box.querySelector('#clBlobs');
     var fx = box.querySelector('#clFx');
-    var STRIKES = 72, GAP = 34, START = 1240;
+    var mobileLogo = window.matchMedia('(max-width: 860px)').matches;
+    var STRIKES = mobileLogo ? 32 : 72, GAP = 34, START = 1240;
     var seed = 20261018;
     function rnd() { return (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296; }
 
@@ -425,7 +426,7 @@
       return { el: el, p: p };
     });
     function burst(p) {
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < (mobileLogo ? 1 : 3); i++) {
         var sh = document.createElementNS(NS, 'polygon');
         var sides = 4 + Math.floor(rnd() * 4), size = 5 + rnd() * 9, vertices = [];
         for (var v = 0; v < sides; v++) {
@@ -490,6 +491,8 @@
   var mobilePass = window.matchMedia('(max-width: 860px)');
   var frameCache = Object.create(null), requestedFrame = 1, lastFrame = 1;
   var polish = 0, lastPolish = -1, stage = 0;
+  var trackTop = track ? track.getBoundingClientRect().top + scrollY() : 0;
+  var trackTravel = track ? track.offsetHeight - vh : 0;
 
   function framePath(index) {
     return frameBase + String(index).padStart(3, '0') + '.jpg';
@@ -532,6 +535,25 @@
     lastFrame = index;
   }
 
+  if (track && mobilePass.matches && 'IntersectionObserver' in window) {
+    var stillPreloader = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      [61, 121].forEach(function (index) {
+        var image = cacheFrame(index);
+        if (image.decode) image.decode().catch(function () {});
+      });
+      stillPreloader.disconnect();
+    }, { rootMargin: '150% 0px' });
+    stillPreloader.observe(track);
+  }
+  window.addEventListener('resize', function () {
+    vh = window.innerHeight;
+    if (track) {
+      trackTop = track.getBoundingClientRect().top + scrollY();
+      trackTravel = track.offsetHeight - vh;
+    }
+  }, { passive: true });
+
   var tickId = 0;
   function queueTick() {
     if (!tickId) tickId = requestAnimationFrame(function (time) {
@@ -545,7 +567,7 @@
     var y = scrollY();
     var keepTicking = !!lenis;
 
-    if (heroEl && !reduced) {
+    if (heroEl && !reduced && !mobilePass.matches) {
       var hh = heroEl.offsetHeight;
       if (y < hh * 1.1) {
         heroMedia.style.transform = 'translate3d(0,' + (y * 0.22).toFixed(1) + 'px,0)';
@@ -555,16 +577,28 @@
     }
 
     if (track) {
-      var r = track.getBoundingClientRect();
-      var travel = r.height - vh;
-      var raw = travel > 0 ? clamp(-r.top / travel, 0, 1) : 0;
-      polish = reduced || mobilePass.matches ? raw : lerp(polish, raw, 0.22);
-      if (!reduced && !mobilePass.matches && Math.abs(polish - raw) > 0.0005) keepTicking = true;
-      if (Math.abs(polish - lastPolish) > 0.0005) {
+      var raw;
+      if (mobilePass.matches) {
+        raw = trackTravel > 0 ? clamp((y - trackTop) / trackTravel, 0, 1) : 0;
+        var mobileStage = raw < 1 / 3 ? 0 : raw < 2 / 3 ? 1 : 2;
+        if (mobileStage !== stage) {
+          stage = mobileStage;
+          var stillFrame = stage === 0 ? 1 : stage === 1 ? 61 : 121;
+          if (stillFrame !== lastFrame) showFrame(stillFrame);
+          for (var m = 0; m < pSteps.length; m++) pSteps[m].classList.toggle('on', m === stage);
+        }
+      } else {
+        var r = track.getBoundingClientRect();
+        var travel = r.height - vh;
+        raw = travel > 0 ? clamp(-r.top / travel, 0, 1) : 0;
+        polish = reduced ? raw : lerp(polish, raw, 0.22);
+        if (!reduced && Math.abs(polish - raw) > 0.0005) keepTicking = true;
+      }
+      if (!mobilePass.matches && Math.abs(polish - lastPolish) > 0.0005) {
         lastPolish = polish;
         var e = polish;
-        var st = mobilePass.matches ? (e < 1 / 3 ? 0 : e < 2 / 3 ? 1 : 2) : (e < 0.083 ? 0 : e < 0.583 ? 1 : 2);
-        var nextFrame = mobilePass.matches ? (st === 0 ? 1 : st === 1 ? 61 : 121) : 1 + Math.round(e * (frameCount - 1));
+        var st = e < 0.083 ? 0 : e < 0.583 ? 1 : 2;
+        var nextFrame = 1 + Math.round(e * (frameCount - 1));
         if (nextFrame !== lastFrame) showFrame(nextFrame);
         meter.style.transform = 'scaleX(' + e.toFixed(4) + ')';
         /* Match the copy changes to the actual transition points in the sequence. */

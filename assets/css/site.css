@@ -605,16 +605,16 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
 .phero .wrap{position:relative;z-index:2}
 .phero h1{font-size:clamp(2.9rem,6.4vw,4.8rem);max-width:16ch}
 .phero p{margin-top:var(--s5);color:var(--on-ink-mute);font-size:clamp(1.03rem,1.5vw,1.14rem);max-width:58ch}
-.phero.has-img{min-height:clamp(420px,62svh,600px);display:flex;align-items:flex-end}
+.phero.has-img{min-height:100svh;display:flex;align-items:center}
 .phero.has-img::before{display:none}
-.phero.has-img .wrap{width:100%}
+.phero.has-img .wrap{width:100%;padding-top:0;padding-bottom:0}
 .phero .hero-media img{object-position:var(--pos)}
 .phero-shade{position:absolute;inset:0;z-index:1;pointer-events:none;
   background:
     radial-gradient(70% 75% at 50% 72%,rgba(14,30,35,.85) 0%,rgba(14,30,35,.5) 52%,transparent 85%),
     linear-gradient(180deg,rgba(14,30,35,.6) 0%,rgba(14,30,35,.15) 38%,rgba(14,30,35,.85) 100%)}
 /* static logo at the top of each page header (home has the chiselled version) */
-.phero-logo{display:block;width:clamp(120px,11vw,160px);height:auto;aspect-ratio:477/486;margin:0 auto var(--s5);
+.phero-logo{display:block;width:clamp(163px,15.3vw,218px);height:auto;aspect-ratio:477/486;margin:0 auto var(--s5);
   filter:drop-shadow(0 2px 7px rgba(6,16,15,.55))}
 /* page headers are centred, like the home hero */
 .phero .wrap{text-align:center}
@@ -623,9 +623,9 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
 .phero.has-img p{color:rgba(234,240,238,.88)}
 .phero.has-img .crumb{color:rgba(234,240,238,.9);text-shadow:0 1px 8px rgba(14,30,35,.6)}
 .phero.has-img .crumb a{opacity:1}
-.phero.has-img{padding-bottom:clamp(44px,5.5vw,64px)}
+.phero.has-img{align-items:flex-start;padding-top:calc(var(--hdr) + 96px);padding-bottom:calc(var(--hdr) + 24px)}
 @media (max-width:860px){.phero .hero-media img{object-position:var(--mpos)}
-  .phero.has-img{min-height:clamp(380px,58svh,520px)}}
+  .phero.has-img{min-height:100svh;padding-top:calc(var(--hdr) + 72px)}}
 .crumb{display:flex;gap:8px;margin-bottom:var(--s5);font:500 .84rem/1 var(--f-text);color:var(--on-ink-mute)}
 .crumb a{text-decoration:none;opacity:.8;transition:opacity .3s var(--out)}
 .crumb a:hover{opacity:1;color:#fff}

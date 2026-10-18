@@ -77,35 +77,56 @@
     });
   });
 
-  /* "Get a quote" toggles: down to the form, or back to the top once there */
+  /* A nav link to the page you're already on never reloads: at the top it
+     does nothing, scrolled down it glides back to the top. */
+  var here = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  function fileOf(href) {
+    if (!href) return '';
+    var h = href.split('#')[0].split('?')[0];
+    if (h === '' || h === './' || h === '.') return here;
+    return (h.split('/').pop() || 'index.html').toLowerCase();
+  }
+  document.querySelectorAll('.nav a, .mnav a:not(.btn), .brand').forEach(function (a) {
+    if (fileOf(a.getAttribute('href')) !== here) return;
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      closeMenu();
+      if (busy) return;
+      if (scrollY() > 4) {
+        scrollToY(0);
+        history.replaceState(null, '', location.pathname);
+      }
+    });
+  });
+
+  /* "Get a quote": go to the form, or do nothing if you're already on it. */
   var quote = document.getElementById('quote');
-  function goQuote(forceDown) {
-    if (!quote || busy) return;
-    var top = quote.getBoundingClientRect().top - headerH();
-    if (!forceDown && scrollY() > 100 && top < vh * 0.6) {
-      scrollToY(0);
-      history.replaceState(null, '', location.pathname);
-    } else {
-      scrollToEl(quote);
-      history.replaceState(null, '', '#quote');
-    }
+  function atQuote() {
+    if (!quote) return false;
+    var r = quote.getBoundingClientRect();
+    return r.top - headerH() < vh * 0.4 && r.bottom > headerH() + 48;
+  }
+  function goQuote() {
+    if (!quote || busy || atQuote()) return;
+    scrollToEl(quote);
+    history.replaceState(null, '', '#quote');
   }
   document.querySelectorAll('[data-quote]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       if (!quote) return;
       e.preventDefault();
       closeMenu();
-      goQuote(false);
+      goQuote();
     });
   });
-  /* "Get a quote on this" — picks the job type, then goes down */
+  /* "Get a quote on this" — picks the job type, then goes to the form */
   document.querySelectorAll('[data-job]').forEach(function (a) {
     a.addEventListener('click', function (e) {
       if (!quote) return;
       e.preventDefault();
       var sel = quote.querySelector('select[name="Job type"]');
       if (sel) sel.value = a.getAttribute('data-job');
-      goQuote(true);
+      goQuote();
     });
   });
   if (location.hash === '#quote' && quote) {

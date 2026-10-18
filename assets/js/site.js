@@ -12,6 +12,12 @@
   var vh = window.innerHeight;
   window.addEventListener('resize', function () { vh = window.innerHeight; }, { passive: true });
 
+  /* run fn once the page-to-page transition (if any) has finished */
+  function settled(fn) {
+    requestAnimationFrame(function () {
+      if (window.__vtDone) window.__vtDone.then(fn); else fn();
+    });
+  }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function lerp(a, b, t) { return a + (b - a) * t; }
   function smooth(e0, e1, x) { var t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); }
@@ -253,8 +259,10 @@
     var revealObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
-        entry.target.classList.add('in');
-        revealObserver.unobserve(entry.target);
+        var target = entry.target;
+        revealObserver.unobserve(target);
+        if (window.__vtDone) window.__vtDone.then(function () { target.classList.add('in'); });
+        else target.classList.add('in');
       });
     }, { rootMargin: '0px 0px 8% 0px' });
     pending.forEach(function (el) { revealObserver.observe(el); });
@@ -441,7 +449,7 @@
     var blobs = box.querySelector('#clBlobs');
     var fx = box.querySelector('#clFx');
     var mobileLogo = window.matchMedia('(max-width: 860px)').matches;
-    var STRIKES = mobileLogo ? 32 : 72, GAP = 34, START = 1240;
+    var STRIKES = mobileLogo ? 60 : 72, GAP = mobileLogo ? 20 : 34, START = 1240;
     var seed = 20261018;
     function rnd() { return (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296; }
 
@@ -498,15 +506,22 @@
       }
     }
 
+    /* after the last chip lands, fade the mask fully open so no part of the
+       logo is ever left uncovered, whatever the screen size */
+    var done = document.createElementNS(NS, 'rect');
+    done.setAttribute('width', '477'); done.setAttribute('height', '486'); done.setAttribute('fill', '#fff');
+    done.style.opacity = 0;
     var timers = [];
     function resetLogo() {
       timers.forEach(clearTimeout); timers = [];
       fx.textContent = '';
+      if (done.parentNode) done.parentNode.removeChild(done);
+      done.style.opacity = 0;
       chips.forEach(function (c) { c.el.style.opacity = 0; c.el.style.transform = 'scale(.35)'; });
     }
     function play() {
       resetLogo();
-      if (reduced) { chips.forEach(function (c) { c.el.style.opacity = 1; c.el.style.transform = 'none'; }); return; }
+      if (reduced) { chips.forEach(function (c) { c.el.style.opacity = 1; c.el.style.transform = 'none'; }); blobs.parentNode.appendChild(done); done.style.opacity = 1; return; }
       chips.forEach(function (c, i) {
         timers.push(setTimeout(function () {
           c.el.style.opacity = 1;
@@ -515,11 +530,15 @@
           burst(c.p);
         }, START + i * GAP));
       });
+      timers.push(setTimeout(function () {
+        blobs.parentNode.appendChild(done);
+        done.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease-out', fill: 'forwards' });
+      }, START + chips.length * GAP + 260));
     }
     resetLogo();
     box.style.cursor = 'pointer';
     box.addEventListener('click', play);
-    play();
+    settled(play);
   })();
 
   /* ---------------------------------------------------------------------

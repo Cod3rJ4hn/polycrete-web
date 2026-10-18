@@ -550,33 +550,122 @@
 
   var mobilePass = window.matchMedia('(max-width: 860px)');
 
-  /* The passes: the image is sticky in CSS and the page scrolls natively.
-     Whichever step crosses the middle band of the viewport becomes active. */
+  /* The passes. Desktop: one pinned stage; the active step follows scroll position, and a
+     downward scroll gesture glides exactly one step then waits for the next gesture. Scrolling
+     up is left alone. Mobile: steps sit in normal flow and the one mid-screen is active. */
+  var passTick = null;
   (function () {
     var steps = document.querySelectorAll('.pass-step');
-    if (!steps.length) return;
+    var grid = document.querySelector('.pass-grid');
+    var sticky = document.querySelector('.pass-sticky');
+    var panel = document.querySelector('.pass-panel');
+    if (!steps.length || !grid || !sticky || !panel) return;
     var images = document.querySelectorAll('.pass-panel .pass-image');
     var segs = document.querySelectorAll('.pass-meter-segment i');
+    var n = steps.length;
     var current = -1;
-    function setStage(n) {
-      if (n === current) return;
-      current = n;
-      for (var i = 0; i < steps.length; i++) {
-        steps[i].classList.toggle('on', i === n);
-        steps[i].classList.toggle('done', i <= n);
+    for (var q = 0; q < images.length; q++) images[q].style.setProperty('--i', q);
+
+    function setStage(i) {
+      if (i === current) return;
+      current = i;
+      for (var a = 0; a < steps.length; a++) {
+        steps[a].classList.toggle('on', a === i);
+        steps[a].classList.toggle('done', a <= i);
       }
       for (var j = 0; j < images.length; j++) {
-        images[j].classList.toggle('on', j === n);
-        images[j].setAttribute('aria-hidden', j === n ? 'false' : 'true');
+        images[j].classList.toggle('on', j === i);
+        images[j].setAttribute('aria-hidden', j === i ? 'false' : 'true');
       }
-      for (var k = 0; k < segs.length; k++) segs[k].classList.toggle('on', k <= n);
+      for (var k = 0; k < segs.length; k++) segs[k].classList.toggle('on', k <= i);
     }
     setStage(0);
-    if (!('IntersectionObserver' in window)) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) setStage(Number(e.target.dataset.index)); });
-    }, { rootMargin: '-45% 0px -45% 0px' });
-    steps.forEach(function (s) { io.observe(s); });
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        if (!mobilePass.matches) return;
+        entries.forEach(function (e) { if (e.isIntersecting) setStage(Number(e.target.dataset.index)); });
+      }, { rootMargin: '-45% 0px -45% 0px' });
+      steps.forEach(function (st) { io.observe(st); });
+    }
+
+    function geom() {
+      var top = parseFloat(getComputedStyle(sticky).top) || 0;
+      var y = window.pageYOffset;
+      var p0 = y + grid.getBoundingClientRect().top - top;          // scroll position where step 1 locks
+      var step = n > 1 ? (grid.offsetHeight - sticky.offsetHeight) / (n - 1) : 1;
+      return { y: y, p0: p0, step: step, end: p0 + step * (n - 1) };
+    }
+
+    passTick = function () {
+      if (mobilePass.matches) return;
+      var g = geom();
+      var p = clamp((g.y - g.p0) / g.step, 0, n - 1);
+      panel.style.setProperty('--p', p.toFixed(3));
+      setStage(Math.round(p));
+    };
+
+    /* ---- the lock ---- */
+    function lockOn() { return !reduced && finePointer && !mobilePass.matches; }
+    function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+    var gliding = false, consumed = false, lastWheel = 0;
+
+    function glideTo(y) {
+      var dur = 0.95;
+      gliding = true; busy = true;
+      var finished = false;
+      function finish() { if (finished) return; finished = true; gliding = false; busy = false; }
+      setTimeout(finish, dur * 1000 + 350);
+      if (lenis) {
+        lenis.scrollTo(y, { duration: dur, easing: easeOutQuart, lock: true, force: true, onComplete: finish });
+        return;
+      }
+      var from = window.pageYOffset, delta = y - from, t0 = null;
+      requestAnimationFrame(function f(ts) {
+        if (t0 === null) t0 = ts;
+        var pr = Math.min(1, (ts - t0) / (dur * 1000));
+        window.scrollTo(0, from + delta * easeOutQuart(pr));
+        if (pr < 1) requestAnimationFrame(f); else finish();
+      });
+    }
+
+    /* one step down: the next lock position below where we are (only while in the section) */
+    function stepDown() {
+      var g = geom();
+      if (g.y < g.p0 - vh * 0.5 || g.y >= g.end - 2) return false;
+      var target = g.end;
+      for (var i = 0; i < n; i++) {
+        var pos = g.p0 + g.step * i;
+        if (pos > g.y + 4) { target = pos; break; }
+      }
+      glideTo(target);
+      return true;
+    }
+
+    window.addEventListener('wheel', function (e) {
+      if (!lockOn() || e.ctrlKey) return;
+      var now = performance.now();
+      if (now - lastWheel >= 160) consumed = false;          // a pause = a new gesture
+      lastWheel = now;
+      if (gliding) { e.preventDefault(); e.stopPropagation(); return; }
+      if (e.deltaY <= 0) { consumed = false; return; }       // up is free scroll
+      if (e.deltaY < 3) return;
+      if (consumed) {                                         // same gesture still going: hold
+        var g = geom();
+        if (g.y >= g.p0 - vh * 0.5 && g.y < g.end - 2) { e.preventDefault(); e.stopPropagation(); }
+        return;
+      }
+      if (stepDown()) { consumed = true; e.preventDefault(); e.stopPropagation(); }
+    }, { passive: false, capture: true });
+
+    window.addEventListener('keydown', function (e) {
+      if (!lockOn() || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      var t = e.target && e.target.tagName;
+      if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || (e.target && e.target.isContentEditable)) return;
+      if (e.key !== 'ArrowDown' && e.key !== 'PageDown' && e.key !== ' ') return;
+      if (gliding) { e.preventDefault(); return; }
+      if (stepDown()) e.preventDefault();
+    });
   })();
 
   var tickId = 0;
@@ -589,6 +678,7 @@
   function tick(time) {
     if (!('IntersectionObserver' in window)) revealCheck();
     if (lenis) lenis.raf(time);
+    if (passTick) passTick();
     var y = scrollY();
     var keepTicking = !!lenis;
 

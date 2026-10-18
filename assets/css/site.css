@@ -415,6 +415,30 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
   transform:scaleX(0);transform-origin:left center;transition:transform .7s ease-out}
 .pass-meter i.on{transform:scaleX(1)}
 
+/* Desktop: one pinned stage. The photo sits centred on the page, the step text sits on
+   the photo, and the section is tall enough to give each step one screen of scroll. */
+@media (min-width:861px){
+  .pass-grid{--n:3;--ph:min(76svh,740px);--pw:min(1160px,100%);
+    --T:calc(var(--hdr) + (100svh - var(--hdr) - var(--ph)) / 2);
+    display:grid;grid-template-columns:minmax(0,1fr);gap:0;
+    height:calc(var(--ph) + (var(--n) - 1) * 100svh)}
+  .pass-side{grid-area:1/1;position:relative;z-index:1}
+  .pass-sticky{position:sticky;top:var(--T);width:var(--pw);height:var(--ph);margin:0 auto}
+  .pass-panel{height:100%}
+  .pass-list{grid-area:1/1;align-self:start;position:sticky;top:var(--T);z-index:3;
+    width:var(--pw);height:var(--ph);margin:0 auto;pointer-events:none}
+  .pass-step{position:absolute;left:0;right:0;bottom:48px;min-height:0;
+    padding:0 clamp(28px,3.5vw,56px);opacity:0;transform:translate3d(0,14px,0);
+    transition:opacity .6s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+  .pass-step:first-child{padding-top:0}
+  .pass-step.on{opacity:1;transform:none}
+  .pass-number{font-size:clamp(2.8rem,4.4vw,4.4rem)}
+  .pass-step .pass-detail{color:rgba(234,240,238,.9);max-width:40ch}
+  /* a touch larger than the frame so the photo's edges (and anything stamped on them) stay out of view;
+     it drifts slightly as you scroll between steps */
+  .pass-image{transform:translate3d(0,calc((var(--p,0) - var(--i,0)) * -22px),0) scale(1.09)}
+}
+
 /* ==========================================================================
    RAIL, BEFORE/AFTER, GALLERY, LIGHTBOX
    ========================================================================== */

@@ -398,6 +398,10 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .pass-image{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;
   object-position:center 58%;opacity:0;transition:opacity .55s ease}
 .pass-image.on{opacity:1}
+.pass-meter{position:absolute;z-index:2;left:20px;right:20px;bottom:18px;display:flex;gap:7px}
+.pass-meter-segment{display:block;flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.42);overflow:hidden}
+.pass-meter i{display:block;width:100%;height:100%;border-radius:inherit;background:var(--accent-soft);
+  transform:scaleX(0);transform-origin:left center;transition:transform .18s linear}
 
 /* ==========================================================================
    RAIL, BEFORE/AFTER, GALLERY, LIGHTBOX
@@ -713,6 +717,7 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   .pass-txt .pass-title{font-size:clamp(1.35rem,6vw,1.8rem);margin-bottom:4px}
   .pass-txt .pass-detail{font-size:.84rem;line-height:1.35}
   .pass-panel{height:auto;aspect-ratio:16/9;border-radius:var(--r)}
+  .pass-meter{left:12px;right:12px;bottom:12px;gap:5px}
   .hero-logo #clBlobs{filter:none}
 
   .showcase{grid-template-columns:1fr}

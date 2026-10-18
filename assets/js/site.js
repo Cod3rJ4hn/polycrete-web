@@ -384,7 +384,7 @@
     var NS = 'http://www.w3.org/2000/svg';
     var blobs = box.querySelector('#clBlobs');
     var fx = box.querySelector('#clFx');
-    var STRIKES = 34, GAP = 42, START = 240;
+    var STRIKES = 72, GAP = 34, START = 1240;
     var seed = 20261018;
     function rnd() { return (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296; }
 
@@ -415,21 +415,29 @@
       blobs.appendChild(el);
       return { el: el, p: p };
     });
-    var safety = document.createElementNS(NS, 'rect');
-    safety.setAttribute('width', 477); safety.setAttribute('height', 486);
-    safety.style.opacity = 0; blobs.appendChild(safety);
-
     function burst(p) {
-      for (var i = 0; i < 6; i++) {
-        var s = 2 + rnd() * 5, sh = document.createElementNS(NS, 'polygon');
-        sh.setAttribute('points', '0,0 ' + s + ',' + (s * 0.4) + ' ' + (s * 0.5) + ',' + s);
-        sh.setAttribute('fill', '#eef3f1'); sh.setAttribute('opacity', '.85');
+      for (var i = 0; i < 3; i++) {
+        var sh = document.createElementNS(NS, 'polygon');
+        var sides = 4 + Math.floor(rnd() * 4), size = 5 + rnd() * 9, vertices = [];
+        for (var v = 0; v < sides; v++) {
+          var angle = (v / sides) * Math.PI * 2 + rnd() * .45;
+          var radius = size * (.55 + rnd() * .55);
+          vertices.push((Math.cos(angle) * radius).toFixed(1) + ',' + (Math.sin(angle) * radius).toFixed(1));
+        }
+        sh.setAttribute('points', vertices.join(' '));
+        sh.setAttribute('fill', '#fff');
+        sh.setAttribute('stroke', '#e6ecea'); sh.setAttribute('stroke-width', '.8');
+        sh.setAttribute('stroke-linejoin', 'bevel'); sh.setAttribute('opacity', '.92');
         fx.appendChild(sh);
-        var a = -Math.PI / 2 + (rnd() - 0.5) * 2.4, vv = 30 + rnd() * 70;
+        var dx = (rnd() - .5) * 110, lift = (rnd() - .5) * 24;
+        var spin = (rnd() - .5) * 500, fall = 145 + rnd() * 65;
         sh.animate([
-          { transform: 'translate(' + p.x + 'px,' + p.y + 'px) rotate(0deg)', opacity: .85 },
-          { transform: 'translate(' + (p.x + Math.cos(a) * vv) + 'px,' + (p.y + Math.sin(a) * vv + 60) + 'px) rotate(' + ((rnd() - .5) * 540) + 'deg)', opacity: 0 }
-        ], { duration: 520 + rnd() * 260, easing: 'cubic-bezier(.2,.6,.5,1)' }).onfinish = function () { sh.remove(); };
+          { transform: 'translate(' + p.x + 'px,' + p.y + 'px) rotate(0deg) scale(.6)', opacity: 0 },
+          { transform: 'translate(' + (p.x + dx * .12) + 'px,' + (p.y - 8) + 'px) rotate(' + (spin * .12) + 'deg) scale(1)', opacity: .96, offset: .12 },
+          { transform: 'translate(' + (p.x + dx) + 'px,' + (p.y + lift + fall) + 'px) rotate(' + spin + 'deg)', opacity: 0 }
+        ], { duration: 450 + rnd() * 200, easing: 'cubic-bezier(.55,0,1,1)' }).onfinish = (function (spark) {
+          return function () { spark.remove(); };
+        })(sh);
       }
     }
 
@@ -438,22 +446,18 @@
       timers.forEach(clearTimeout); timers = [];
       fx.textContent = '';
       chips.forEach(function (c) { c.el.style.opacity = 0; c.el.style.transform = 'scale(.35)'; });
-      safety.style.opacity = 0;
     }
     function play() {
       resetLogo();
-      if (reduced) { chips.forEach(function (c) { c.el.style.opacity = 1; c.el.style.transform = 'none'; }); safety.style.opacity = 1; return; }
+      if (reduced) { chips.forEach(function (c) { c.el.style.opacity = 1; c.el.style.transform = 'none'; }); return; }
       chips.forEach(function (c, i) {
         timers.push(setTimeout(function () {
           c.el.style.opacity = 1;
           c.el.animate([{ transform: 'scale(.35)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }],
-            { duration: 240, easing: 'cubic-bezier(.2,1.5,.4,1)', fill: 'forwards' });
+            { duration: 280, easing: 'cubic-bezier(.2,1.5,.4,1)', fill: 'forwards' });
           burst(c.p);
         }, START + i * GAP));
       });
-      timers.push(setTimeout(function () {
-        safety.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, fill: 'forwards' });
-      }, START + chips.length * GAP + 120));
     }
     resetLogo();
     box.style.cursor = 'pointer';
@@ -469,14 +473,53 @@
   var heroEl = document.querySelector('.hero, .phero.has-img');
 
   var track = document.querySelector('.pass-track');
-  var panel = track && track.querySelector('.pass-panel');
-  var p2 = track && track.querySelector('.plate-2');
-  var p3 = track && track.querySelector('.plate-3');
-  var band = track && track.querySelector('.pass-band');
-  var sheen = track && track.querySelector('.pass-sheen');
+  var frame = track && track.querySelector('.pass-frame');
+  var framePanel = track && track.querySelector('.pass-panel');
   var meter = track && track.querySelector('.pass-meter i');
   var pSteps = track ? track.querySelectorAll('.pass-step') : [];
+  var frameCount = 121, frameBase = frame && frame.getAttribute('data-frame-base');
+  var frameCache = Object.create(null), requestedFrame = 1, lastFrame = 1;
   var polish = 0, lastPolish = -1, stage = 0;
+
+  function framePath(index) {
+    return frameBase + String(index).padStart(3, '0') + '.jpg';
+  }
+  function paintFrame(image) {
+    if (!frame || !image || !image.naturalWidth) return;
+    frame.src = image.src;
+    if (framePanel) framePanel.style.setProperty('--pass-frame-bg', 'url("' + image.src + '")');
+  }
+  function cacheFrame(index) {
+    var image = frameCache[index];
+    if (image) return image;
+    image = new Image();
+    image.decoding = 'async';
+    image.onload = function () {
+      if (requestedFrame === index) paintFrame(image);
+    };
+    frameCache[index] = image;
+    image.src = framePath(index);
+    return image;
+  }
+  function showFrame(index) {
+    if (!frame || !frameBase) return;
+    requestedFrame = index;
+    var cached = cacheFrame(index);
+    if (cached.complete && cached.naturalWidth) {
+      paintFrame(cached);
+    }
+    /* Keep a short buffer ahead of the scroll direction so frame changes are ready. */
+    var direction = index >= lastFrame ? 1 : -1;
+    for (var ahead = 1; ahead <= 8; ahead++) {
+      var next = index + direction * ahead;
+      if (next < 1 || next > frameCount) continue;
+      cacheFrame(next);
+    }
+    Object.keys(frameCache).forEach(function (key) {
+      if (Math.abs(Number(key) - index) > 12) delete frameCache[key];
+    });
+    lastFrame = index;
+  }
 
   function tick(time) {
     revealCheck();
@@ -496,20 +539,15 @@
       var r = track.getBoundingClientRect();
       var travel = r.height - vh;
       var raw = travel > 0 ? clamp(-r.top / travel, 0, 1) : 0;
-      polish = reduced ? raw : lerp(polish, raw, 0.22);
+      polish = reduced ? 0 : lerp(polish, raw, 0.22);
       if (Math.abs(polish - lastPolish) > 0.0005) {
         lastPolish = polish;
         var e = polish;
-        p2.style.opacity = smooth(0.12, 0.42, e).toFixed(3);
-        p3.style.opacity = smooth(0.56, 0.86, e).toFixed(3);
-        var ph = panel.clientHeight;
-        band.style.transform = 'translate3d(0,' + (e * ph).toFixed(1) + 'px,0)';
-        band.style.opacity = clamp(Math.sin(Math.PI * e) * 1.3, 0, 1).toFixed(3);
-        sheen.style.transform = 'translate3d(' + ((e - 0.5) * 36).toFixed(2) + '%,0,0)';
-        sheen.style.opacity = (smooth(0.55, 1, e) * 0.55).toFixed(3);
+        var nextFrame = 1 + Math.round(e * (frameCount - 1));
+        if (nextFrame !== lastFrame) showFrame(nextFrame);
         meter.style.transform = 'scaleX(' + e.toFixed(4) + ')';
-        /* the words on the left change at the same moment the photo does */
-        var st = e < 0.27 ? 0 : e < 0.71 ? 1 : 2;
+        /* Match the copy changes to the actual transition points in the sequence. */
+        var st = e < 0.083 ? 0 : e < 0.583 ? 1 : 2;
         if (st !== stage) {
           stage = st;
           for (var k = 0; k < pSteps.length; k++) pSteps[k].classList.toggle('on', k === st);

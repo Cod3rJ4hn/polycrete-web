@@ -374,6 +374,103 @@
     steps.forEach(function (s) { sio.observe(s); });
   }
 
+
+  /* ---------------------------------------------------------------------
+     Hero logo — chiselled out of nothing, in white
+     --------------------------------------------------------------------- */
+  (function () {
+    var box = document.getElementById('chiselLogo');
+    if (!box) return;
+    var NS = 'http://www.w3.org/2000/svg';
+    var blobs = box.querySelector('#clBlobs');
+    var fx = box.querySelector('#clFx');
+    var STRIKES = 34, GAP = 42, START = 240;
+    var seed = 20261018;
+    function rnd() { return (seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296; }
+
+    var paths = [].slice.call(box.querySelectorAll('#clLogo path'));
+    var lens = paths.map(function (p) { return p.getTotalLength(); });
+    var total = lens.reduce(function (a, b) { return a + b; }, 0);
+    var pts = [];
+    paths.forEach(function (p, i) {
+      var n = Math.max(4, Math.round(STRIKES * lens[i] / total));
+      for (var k = 0; k < n; k++) {
+        var pt = p.getPointAtLength(((k + 0.5) / n) * lens[i]);
+        pts.push({ x: pt.x, y: pt.y });
+      }
+    });
+    pts.forEach(function (p) { p.k = p.x * 0.6 + p.y + rnd() * 150; });
+    pts.sort(function (a, b) { return a.k - b.k; });
+
+    var chips = pts.map(function (p) {
+      var r = 58 + rnd() * 30, v = 9 + Math.floor(rnd() * 4), d = [];
+      for (var i = 0; i < v; i++) {
+        var a = (i / v) * Math.PI * 2 + rnd() * 0.3, rr = r * (0.62 + rnd() * 0.55);
+        d.push([p.x + Math.cos(a) * rr, p.y + Math.sin(a) * rr]);
+      }
+      var el = document.createElementNS(NS, 'polygon');
+      el.setAttribute('points', d.map(function (c) { return c.map(function (n) { return n.toFixed(1); }).join(','); }).join(' '));
+      el.style.transformOrigin = p.x.toFixed(1) + 'px ' + p.y.toFixed(1) + 'px';
+      el.style.opacity = 0;
+      blobs.appendChild(el);
+      return { el: el, p: p };
+    });
+    var safety = document.createElementNS(NS, 'rect');
+    safety.setAttribute('width', 477); safety.setAttribute('height', 486);
+    safety.style.opacity = 0; blobs.appendChild(safety);
+
+    function burst(p) {
+      for (var i = 0; i < 6; i++) {
+        var s = 2 + rnd() * 5, sh = document.createElementNS(NS, 'polygon');
+        sh.setAttribute('points', '0,0 ' + s + ',' + (s * 0.4) + ' ' + (s * 0.5) + ',' + s);
+        sh.setAttribute('fill', '#eef3f1'); sh.setAttribute('opacity', '.85');
+        fx.appendChild(sh);
+        var a = -Math.PI / 2 + (rnd() - 0.5) * 2.4, vv = 30 + rnd() * 70;
+        sh.animate([
+          { transform: 'translate(' + p.x + 'px,' + p.y + 'px) rotate(0deg)', opacity: .85 },
+          { transform: 'translate(' + (p.x + Math.cos(a) * vv) + 'px,' + (p.y + Math.sin(a) * vv + 60) + 'px) rotate(' + ((rnd() - .5) * 540) + 'deg)', opacity: 0 }
+        ], { duration: 520 + rnd() * 260, easing: 'cubic-bezier(.2,.6,.5,1)' }).onfinish = function () { sh.remove(); };
+      }
+      for (var j = 0; j < 8; j++) {
+        var c = document.createElementNS(NS, 'circle');
+        c.setAttribute('r', 0.9 + rnd() * 2.4); c.setAttribute('fill', '#ffffff');
+        c.setAttribute('cx', p.x); c.setAttribute('cy', p.y); fx.appendChild(c);
+        var a2 = rnd() * Math.PI * 2, v2 = 14 + rnd() * 34;
+        c.animate([
+          { transform: 'translate(0,0) scale(.6)', opacity: .5 },
+          { transform: 'translate(' + (Math.cos(a2) * v2) + 'px,' + (Math.sin(a2) * v2 - 6) + 'px) scale(1.7)', opacity: 0 }
+        ], { duration: 620 + rnd() * 300, easing: 'ease-out' }).onfinish = function () { c.remove(); };
+      }
+    }
+
+    var timers = [];
+    function resetLogo() {
+      timers.forEach(clearTimeout); timers = [];
+      fx.textContent = '';
+      chips.forEach(function (c) { c.el.style.opacity = 0; c.el.style.transform = 'scale(.35)'; });
+      safety.style.opacity = 0;
+    }
+    function play() {
+      resetLogo();
+      if (reduced) { chips.forEach(function (c) { c.el.style.opacity = 1; c.el.style.transform = 'none'; }); safety.style.opacity = 1; return; }
+      chips.forEach(function (c, i) {
+        timers.push(setTimeout(function () {
+          c.el.style.opacity = 1;
+          c.el.animate([{ transform: 'scale(.35)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }],
+            { duration: 240, easing: 'cubic-bezier(.2,1.5,.4,1)', fill: 'forwards' });
+          burst(c.p);
+        }, START + i * GAP));
+      });
+      timers.push(setTimeout(function () {
+        safety.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, fill: 'forwards' });
+      }, START + chips.length * GAP + 120));
+    }
+    resetLogo();
+    box.style.cursor = 'pointer';
+    box.addEventListener('click', play);
+    play();
+  })();
+
   /* ---------------------------------------------------------------------
      The one loop: hero depth + the passes
      --------------------------------------------------------------------- */

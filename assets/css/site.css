@@ -286,11 +286,10 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
   from{clip-path:inset(-25% 100% -45% -6%);transform:translate3d(-.04em,0,0)}
   to{clip-path:inset(-25% -6% -45% -6%);transform:none}}
 
-/* hero logo — sits where the rating badge was */
-.hero-logo{display:block;width:clamp(84px,8vw,112px);height:auto;margin:0 auto var(--s5);
-  filter:drop-shadow(0 6px 24px rgba(0,0,0,.35))}
-.hero-anim .hero-logo{animation:hLogo 1s var(--out) .05s backwards}
-@keyframes hLogo{from{opacity:0;transform:scale(.82) translate3d(0,10px,0)}}
+/* hero logo — chiselled out in white, sits where the rating badge was */
+.hero-logo{width:clamp(96px,9vw,128px);aspect-ratio:477/486;margin:0 auto var(--s5)}
+.hero-logo svg{display:block;width:100%;height:100%;overflow:visible}
+.hero-logo polygon,.hero-logo circle{will-change:transform,opacity}
 
 /* ---------- review banner: replaces the four badges ---------- */
 .rbanner{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;

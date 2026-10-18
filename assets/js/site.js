@@ -490,12 +490,23 @@
   var stage = 0;
   var trackTop = track ? track.getBoundingClientRect().top + scrollY() : 0;
   var trackTravel = track && stageEl ? track.offsetHeight - stageEl.offsetHeight : 0;
+  var stepWindow = track && track.querySelector('.pass-step-window');
+  var stepPitch = trackTravel / 3;
+
+  function sizePassSteps() {
+    if (!track || !stepWindow || !trackTravel) return;
+    stepPitch = trackTravel / 3;
+    track.style.setProperty('--pass-step-pitch', stepPitch + 'px');
+    stepWindow.style.height = mobilePass.matches ? 'auto' : 'min(70svh, 680px)';
+  }
+  sizePassSteps();
 
   function setStage(index) {
     stage = index;
     for (var i = 0; i < pSteps.length; i++) {
       var active = i === index;
       pSteps[i].classList.toggle('on', active);
+      pSteps[i].setAttribute('aria-hidden', active ? 'false' : 'true');
       if (active) pSteps[i].setAttribute('aria-current', 'step');
       else pSteps[i].removeAttribute('aria-current');
     }
@@ -510,6 +521,7 @@
     if (track && stageEl) {
       trackTop = track.getBoundingClientRect().top + scrollY();
       trackTravel = track.offsetHeight - stageEl.offsetHeight;
+      sizePassSteps();
     }
   }, { passive: true });
 
@@ -538,6 +550,11 @@
     if (track && trackTravel > 0) {
       var progress = clamp((y - trackTop) / trackTravel, 0, 1);
       var nextStage = Math.min(2, Math.floor(progress * 3));
+      if (!mobilePass.matches) {
+        track.style.setProperty('--pass-shift', Math.min(progress * trackTravel, stepPitch * 2) + 'px');
+      } else {
+        track.style.setProperty('--pass-shift', '0px');
+      }
       if (nextStage !== stage) setStage(nextStage);
     }
     if (keepTicking) queueTick();

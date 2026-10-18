@@ -383,13 +383,13 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
   gap:clamp(24px,4vw,64px)}
 .pass-txt{min-width:0}
 .pass .eyebrow{color:var(--on-ink-mute);font-size:.78rem;letter-spacing:.15em}
-.pass-steps{display:grid;gap:clamp(16px,2.4vh,24px)}
-.pass-step{display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:10px;align-items:start;
-  padding:0 0 clamp(14px,2vh,20px);border-bottom:1px solid var(--line-ink);opacity:.42;
-  transition:opacity .45s ease}
-.pass-step:last-child{padding-bottom:0;border:0}
+.pass-step-window{height:min(70svh,680px);overflow:hidden}
+.pass-steps{display:flex;flex-direction:column;transform:translate3d(0,calc(-1 * var(--pass-shift, 0px)),0);will-change:transform}
+.pass-step{box-sizing:border-box;flex:0 0 var(--pass-step-pitch,66svh);min-height:var(--pass-step-pitch,66svh);
+  opacity:.3;transition:opacity .45s ease}
 .pass-step.on{opacity:1}
-.pass-number{font:700 1rem/1 var(--f-display);letter-spacing:.04em;color:var(--accent-soft);padding-top:5px}
+.pass-number{display:block;font:700 clamp(3rem,5vw,4.4rem)/.9 var(--f-display);
+  letter-spacing:.02em;color:var(--accent-soft);margin:0 0 12px}
 .pass-txt .pass-title{max-width:none;color:#fff;font-size:clamp(1.55rem,2.35vw,2.2rem);margin:0 0 7px}
 .pass-txt .pass-detail{max-width:34ch;color:var(--on-ink-mute);font-size:clamp(.9rem,1.2vw,1rem);line-height:1.45}
 .pass-panel{position:relative;width:100%;height:min(70svh,680px);overflow:hidden;
@@ -703,9 +703,12 @@ a.icard:active{transform:scale(.99);transition-duration:.18s}
   .pass-stage{top:var(--hdr);height:calc(100svh - var(--hdr) - 78px)}
   .pass-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;
     gap:clamp(12px,2.4svh,22px);padding:clamp(14px,2.2svh,22px) var(--gut)}
-  .pass-steps{gap:clamp(9px,1.3svh,13px)}
-  .pass-step{grid-template-columns:1.8rem minmax(0,1fr);gap:8px;padding-bottom:clamp(8px,1.2svh,12px)}
-  .pass-number{font-size:.9rem;padding-top:3px}
+  .pass-step-window{height:auto;overflow:visible}
+  .pass-steps{display:grid;transform:none;will-change:auto}
+  .pass-step{display:grid;grid-template-columns:1.8rem minmax(0,1fr);gap:8px;grid-area:1/1;
+    flex:none;min-height:0;opacity:0;pointer-events:none}
+  .pass-step.on{opacity:1;pointer-events:auto}
+  .pass-number{display:block;font-size:.9rem;line-height:1;letter-spacing:.04em;margin:0;padding-top:3px}
   .pass-txt .pass-title{font-size:clamp(1.35rem,6vw,1.8rem);margin-bottom:4px}
   .pass-txt .pass-detail{font-size:.84rem;line-height:1.35}
   .pass-panel{height:auto;aspect-ratio:16/9;border-radius:var(--r)}

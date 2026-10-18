@@ -491,11 +491,12 @@
   var trackTop = track ? track.getBoundingClientRect().top + scrollY() : 0;
   var trackTravel = track && stageEl ? track.offsetHeight - stageEl.offsetHeight : 0;
   var stepWindow = track && track.querySelector('.pass-step-window');
-  var stepPitch = trackTravel / 3;
+  var progressSegments = track ? track.querySelectorAll('.pass-meter-segment i') : [];
+  var stepPitch = trackTravel / 2;
 
   function sizePassSteps() {
     if (!track || !stepWindow || !trackTravel) return;
-    stepPitch = trackTravel / 3;
+    stepPitch = trackTravel / 2;
     track.style.setProperty('--pass-step-pitch', stepPitch + 'px');
     stepWindow.style.height = mobilePass.matches ? 'auto' : 'min(70svh, 680px)';
   }
@@ -516,6 +517,32 @@
       stageImages[j].setAttribute('aria-hidden', shown ? 'false' : 'true');
     }
   }
+  var processSnapLock = false;
+  var processSnapTimer = 0;
+  window.addEventListener('wheel', function (event) {
+    if (!track || mobilePass.matches || reduced || !trackTravel) return;
+    var y = scrollY();
+    var trackEnd = trackTop + trackTravel;
+    if (y < trackTop - 2 || y > trackEnd + 2 || !event.deltaY) return;
+    if (processSnapLock) {
+      event.preventDefault();
+      window.clearTimeout(processSnapTimer);
+      processSnapTimer = window.setTimeout(function () { processSnapLock = false; }, 260);
+      return;
+    }
+    if (busy) return;
+
+    var currentStage = clamp(Math.round((y - trackTop) / trackTravel * 2), 0, 2);
+    var nextStage = currentStage + (event.deltaY > 0 ? 1 : -1);
+    if (nextStage < 0 || nextStage > 2) return;
+
+    event.preventDefault();
+    processSnapLock = true;
+    scrollToY(trackTop + trackTravel * nextStage / 2, function () {
+      window.clearTimeout(processSnapTimer);
+      processSnapTimer = window.setTimeout(function () { processSnapLock = false; }, 260);
+    });
+  }, { passive: false, capture: true });
   window.addEventListener('resize', function () {
     vh = window.innerHeight;
     if (track && stageEl) {
@@ -549,11 +576,16 @@
 
     if (track && trackTravel > 0) {
       var progress = clamp((y - trackTop) / trackTravel, 0, 1);
-      var nextStage = Math.min(2, Math.floor(progress * 3));
+      var nextStage = mobilePass.matches
+        ? Math.min(2, Math.floor(progress * 3))
+        : Math.min(2, Math.floor(progress * 2 + 0.00001));
       if (!mobilePass.matches) {
         track.style.setProperty('--pass-shift', Math.min(progress * trackTravel, stepPitch * 2) + 'px');
       } else {
         track.style.setProperty('--pass-shift', '0px');
+      }
+      for (var k = 0; k < progressSegments.length; k++) {
+        progressSegments[k].style.transform = 'scaleX(' + clamp(progress * 3 - k, 0, 1).toFixed(3) + ')';
       }
       if (nextStage !== stage) setStage(nextStage);
     }

@@ -550,9 +550,11 @@
 
   var mobilePass = window.matchMedia('(max-width: 860px)');
 
-  /* The passes. Desktop: one pinned stage; the active step follows scroll position, and a
-     downward scroll gesture glides exactly one step then waits for the next gesture. Scrolling
-     up is left alone. Mobile: steps sit in normal flow and the one mid-screen is active. */
+  /* The passes — one pinned stage, three steps.
+     A single state machine owns the stage: a scroll flick moves it exactly one step, and the
+     bar, photo and text all follow it in a fixed order (bar fills, then photo cross-fades, then
+     text). Position is only used to work out the stage when the user scrolls freely (upwards, scrollbar,
+     touch). Mobile: steps sit in normal flow and the one mid-screen is active. */
   var passTick = null;
   (function () {
     var steps = document.querySelectorAll('.pass-step');
@@ -563,142 +565,184 @@
     var images = document.querySelectorAll('.pass-panel .pass-image');
     var segs = document.querySelectorAll('.pass-meter-segment i');
     var n = steps.length;
-    var current = -1;
-    for (var q = 0; q < images.length; q++) images[q].style.setProperty('--i', q);
 
-    function setStage(i) {
-      if (i === current) return;
-      current = i;
+    /* ---- mobile: whichever step crosses mid-screen is active ---- */
+    var flowStage = -1;
+    function setFlowStage(i) {
+      if (i === flowStage) return;
+      flowStage = i;
       for (var a = 0; a < steps.length; a++) {
         steps[a].classList.toggle('on', a === i);
         steps[a].classList.toggle('done', a <= i);
       }
-      for (var j = 0; j < images.length; j++) {
-        images[j].classList.toggle('on', j === i);
-        images[j].setAttribute('aria-hidden', j === i ? 'false' : 'true');
-      }
     }
-    setStage(0);
-
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (entries) {
         if (!mobilePass.matches) return;
-        entries.forEach(function (e) { if (e.isIntersecting) setStage(Number(e.target.dataset.index)); });
+        entries.forEach(function (e) { if (e.isIntersecting) setFlowStage(Number(e.target.dataset.index)); });
       }, { rootMargin: '-45% 0px -45% 0px' });
       steps.forEach(function (st) { io.observe(st); });
     }
 
-    var FILL_MS = 410, EMPTY_MS = 260;     // keep in step with the .pass-meter transition in the CSS
+    /* ---- geometry ---- */
     var stickyTop = 0;
     function measure() { stickyTop = parseFloat(getComputedStyle(sticky).top) || 0; }
     measure();
     window.addEventListener('resize', measure, { passive: true });
     window.addEventListener('load', measure);
-
     function geom() {
       var y = window.pageYOffset;
-      var p0 = y + grid.getBoundingClientRect().top - stickyTop;          // scroll position where step 1 locks
+      var p0 = y + grid.getBoundingClientRect().top - stickyTop;           // scroll position where step 1 locks
       var step = n > 1 ? (grid.offsetHeight - sticky.offsetHeight) / (n - 1) : 1;
       return { y: y, p0: p0, step: step, end: p0 + step * (n - 1) };
     }
+    function pOf(g) { return clamp((g.y - g.p0) / g.step, 0, n - 1); }
 
-    /* Each scroll step plays one whole bar filling (a timed animation, not tied to scroll position).
-       When it is full the photo and text change. Steps always run one after the other. */
-    var shown = 0, working = false, inited = false, curP = 0;
-    function advance() {
-      if (working) return;
-      var want = shown;
-      if (curP > shown + 0.15 && shown < n - 1) want = shown + 1;
-      else if (curP < shown - 0.15 && shown > 0) want = shown - 1;
-      if (want === shown) return;
-      working = true;
-      var up = want > shown;
-      segs[up ? want : shown].classList.toggle('on', up);
-      setTimeout(function () {
-        shown = want;
-        setStage(shown);
-        working = false;
-        advance();                           // catch up if the scroll is further along
-      }, up ? FILL_MS : EMPTY_MS);
+    /* ---- the picture on screen ---- */
+    var FILL_MS = 410, EMPTY_MS = 260, SWAP_MS = 500;   // bar fill / bar empty (match the CSS), photo+text swap
+    var logical = 0;        // the stage the user has taken it to
+    var shown = 0;          // the stage on screen
+    var running = false, inited = false, topZ = 1;
+    var timers = [];
+    function later(ms, fn) {
+      var id = setTimeout(function () { var k = timers.indexOf(id); if (k > -1) timers.splice(k, 1); fn(); }, ms);
+      timers.push(id);
     }
-
-    passTick = function () {
-      if (mobilePass.matches) return;
-      var g = geom();
-      curP = clamp((g.y - g.p0) / g.step, 0, n - 1);
-      if (!inited) {                         // first look: show where we already are, no animation
-        inited = true;
-        shown = Math.round(curP);
-        var meter = segs[0] && segs[0].parentNode.parentNode;
-        if (meter) meter.style.setProperty('--snap', '1');
-        for (var k = 0; k < segs.length; k++) segs[k].classList.toggle('on', k <= shown);
-        setStage(shown);
-        if (meter) { void meter.offsetWidth; meter.style.removeProperty('--snap'); }
-        return;
+    function paint(i) {                                   // whole state at once, no animation
+      timers.forEach(clearTimeout); timers.length = 0; running = false;
+      grid.classList.add('snap');
+      for (var k = 0; k < segs.length; k++) segs[k].classList.toggle('on', k <= i);
+      for (var j = 0; j < images.length; j++) {
+        var on = j === i;
+        images[j].classList.toggle('on', on);
+        images[j].style.zIndex = on ? ++topZ : 0;
+        images[j].setAttribute('aria-hidden', on ? 'false' : 'true');
       }
-      advance();
-    };
-
-    /* ---- the lock ---- */
-    function lockOn() { return !reduced && finePointer && !mobilePass.matches; }
-    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
-    var easeOutQuart = easeOutCubic;
-    var gliding = false, consumed = false, queued = false, lastWheel = 0;
-
-    function glideTo(y) {
-      var dur = clamp(Math.abs(y - window.pageYOffset) / 1500, 0.42, 0.62);
-      gliding = true; busy = true;
-      var finished = false;
-      function finish() {
-        if (finished) return;
-        finished = true; gliding = false; busy = false;
-        if (queued) { queued = false; stepDown(); }
+      for (var a = 0; a < steps.length; a++) {
+        steps[a].classList.toggle('on', a === i);
+        steps[a].classList.toggle('done', a <= i);
       }
-      setTimeout(finish, dur * 1000 + 250);
-      if (lenis) {
-        lenis.scrollTo(y, { duration: dur, easing: easeOutQuart, lock: true, force: true, onComplete: finish });
-        return;
-      }
-      var from = window.pageYOffset, delta = y - from, t0 = null;
-      requestAnimationFrame(function f(ts) {
-        if (t0 === null) t0 = ts;
-        var pr = Math.min(1, (ts - t0) / (dur * 1000));
-        window.scrollTo(0, from + delta * easeOutQuart(pr));
-        if (pr < 1) requestAnimationFrame(f); else finish();
+      shown = i;
+      void grid.offsetWidth;
+      grid.classList.remove('snap');
+    }
+    function sync() {                                     // walk from shown to logical, one stage at a time
+      if (running || shown === logical) return;
+      running = true;
+      var from = shown, up = logical > shown, to = up ? from + 1 : from - 1;
+      var f = Math.abs(logical - shown) > 1 ? 0.6 : 1;    // catching up: a little brisker
+      segs[up ? to : from].classList.toggle('on', up);    // 1. the bar fills (or empties)
+      later((up ? FILL_MS : EMPTY_MS) * f, function () {
+        images[to].style.zIndex = ++topZ;                 // 2. photo fades in over the old one
+        images[to].classList.add('on');
+        images[to].setAttribute('aria-hidden', 'false');
+        steps[from].classList.remove('on');               //    old text out...
+        later(200 * f, function () {
+          steps[to].classList.add('on');                  // 3. ...new text in
+          for (var a = 0; a < steps.length; a++) steps[a].classList.toggle('done', a <= to);
+        });
+        later(SWAP_MS * f, function () {
+          images[from].classList.remove('on');
+          images[from].setAttribute('aria-hidden', 'true');
+          shown = to;
+          running = false;
+          sync();
+        });
       });
     }
 
-    /* one step down: the next lock position below where we are (only while in the section) */
-    function stepDown() {
-      var g = geom();
-      if (g.y < g.p0 - vh * 0.5 || g.y >= g.end - 2) return false;
-      var target = g.end;
-      for (var i = 0; i < n; i++) {
-        var pos = g.p0 + g.step * i;
-        if (pos > g.y + 4) { target = pos; break; }
+    /* ---- moving the page ---- */
+    var expectedY = null, entering = false;
+    function jump(y) {                                    // instant: nothing to fight the browser's own scrolling
+      expectedY = y;
+      if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+      else window.scrollTo({ top: y, left: 0, behavior: 'instant' });
+    }
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    var lockUntil = 0;
+    function enter(g) {                                   // pulling the pinned photo into place: the only visible glide
+      entering = true; busy = true;
+      var from = g.y, to = g.p0;
+      var dur = clamp(Math.abs(to - from) / 1400, 0.35, 0.6) * 1000, t0 = null, ended = false;
+      function end() {
+        if (ended) return;
+        ended = true; entering = false; busy = false;
+        lockUntil = performance.now() + 200;
       }
-      glideTo(target);
-      return true;
+      setTimeout(end, dur + 300);
+      logical = 0; sync();
+      requestAnimationFrame(function f(ts) {
+        if (ended) return;
+        if (t0 === null) t0 = ts;
+        var pr = Math.min(1, (ts - t0) / dur);
+        jump(from + (to - from) * easeOutCubic(pr));
+        if (pr < 1) requestAnimationFrame(f); else { jump(to); end(); }
+      });
     }
 
+    /* ---- free scrolling (up, scrollbar, touch): work out the stage from where the page rests ---- */
+    var settleT = 0;
+    function resolve(now) {
+      clearTimeout(settleT);
+      var p = pOf(geom());
+      var t = clamp(Math.round(p), 0, n - 1);
+      if (t === logical) return;
+      var d = Math.abs(p - logical);
+      if (d >= 0.85 || (now && d > 0.6)) { logical = t; sync(); return; }
+      if (!now) settleT = setTimeout(function () {
+        var p2 = pOf(geom()), t2 = clamp(Math.round(p2), 0, n - 1);
+        if (t2 !== logical && Math.abs(p2 - logical) > 0.6) { logical = t2; sync(); }
+      }, 110);
+    }
+    passTick = function () {
+      if (mobilePass.matches) { inited = false; return; }
+      var g = geom();
+      if (!inited) { inited = true; logical = clamp(Math.round(pOf(g)), 0, n - 1); paint(logical); return; }
+      if (expectedY !== null) {                           // that was us
+        if (Math.abs(g.y - expectedY) < 3) return;
+        expectedY = null;
+      }
+      if (entering) return;
+      resolve(false);
+    };
+
+    /* ---- one flick = one step ---- */
+    function lockOn() { return !reduced && finePointer && !mobilePass.matches; }
+    function inZone(g) { return g.y >= g.p0 - vh * 0.5 && g.y <= g.end + 2; }
+    function takeStep() {                                  // true if the page handled it, false to let it scroll on
+      var g = geom();
+      if (!inZone(g) || g.y >= g.end - 2 && logical >= n - 1) return false;
+      if (g.y < g.p0 - 2) { enter(g); return true; }       // coming in from above: lock step 1 first
+      resolve(true);
+      if (logical >= n - 1) return false;                  // last step done: leave the section normally
+      logical++;
+      jump(g.p0 + g.step * logical);
+      sync();
+      return true;
+    }
+    var lastT = 0, lastAbs = 0, swallowing = false;
+    var COOLDOWN = 380;
     window.addEventListener('wheel', function (e) {
       if (!lockOn() || e.ctrlKey) return;
-      var now = performance.now();
-      if (now - lastWheel >= 160) consumed = false;          // a pause = a new gesture
-      lastWheel = now;
-      if (gliding) {
-        e.preventDefault(); e.stopPropagation();
-        if (e.deltaY >= 3 && !consumed) { queued = true; consumed = true; }   // a fresh scroll mid-glide: do it next
+      var now = performance.now(), abs = Math.abs(e.deltaY);
+      var dt = now - lastT, prevAbs = lastAbs;
+      lastT = now; lastAbs = abs;
+      if (dt >= 120) swallowing = false;                   // a pause: next push is a fresh flick
+      var g = geom(), zone = inZone(g);
+      function stop() { e.preventDefault(); e.stopPropagation(); }
+      if (entering || now < lockUntil) {                   // mid-step: hold the page still
+        if (zone) { stop(); if (e.deltaY > 0) swallowing = true; }
         return;
       }
-      if (e.deltaY <= 0) { consumed = false; return; }       // up is free scroll
-      if (e.deltaY < 3) return;
-      if (consumed) {                                         // same gesture still going: hold
-        var g = geom();
-        if (g.y >= g.p0 - vh * 0.5 && g.y < g.end - 2) { e.preventDefault(); e.stopPropagation(); }
-        return;
+      if (e.deltaY <= 0) { swallowing = false; return; }   // up is free scroll
+      if (abs < 3) return;
+      if (swallowing) {                                    // same flick still going, or its momentum tail
+        var push = abs > prevAbs * 1.6 + 8;                // ...unless it is clearly a new push
+        if (!push) { if (zone) stop(); return; }
       }
-      if (stepDown()) { consumed = true; e.preventDefault(); e.stopPropagation(); }
+      if (!zone) return;
+      if (takeStep()) { stop(); swallowing = true; if (!entering) lockUntil = now + COOLDOWN; }
+      else swallowing = false;                             // nothing to lock: scroll on normally
     }, { passive: false, capture: true });
 
     window.addEventListener('keydown', function (e) {
@@ -706,8 +750,9 @@
       var t = e.target && e.target.tagName;
       if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || (e.target && e.target.isContentEditable)) return;
       if (e.key !== 'ArrowDown' && e.key !== 'PageDown' && e.key !== ' ') return;
-      if (gliding) { e.preventDefault(); return; }
-      if (stepDown()) e.preventDefault();
+      var now = performance.now();
+      if (e.repeat || entering || now < lockUntil) { if (inZone(geom())) e.preventDefault(); return; }
+      if (takeStep()) { e.preventDefault(); if (!entering) lockUntil = now + COOLDOWN; }
     });
   })();
 

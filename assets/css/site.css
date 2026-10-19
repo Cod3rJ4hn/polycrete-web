@@ -405,16 +405,16 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
 .pass-panel::after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
   background:linear-gradient(to top,rgba(14,30,35,.7),transparent 45%)}
 .pass-image{position:absolute;inset:0;z-index:0;display:block;width:100%;height:100%;object-fit:cover;
-  object-position:center 58%;opacity:0;transition:opacity 0s linear .45s}
-/* the incoming photo fades in over the outgoing one, which holds until it is covered,
-   so nothing moves or dips: it just looks like the floor changing */
-.pass-image.on{z-index:1;opacity:1;transition:opacity .45s ease-out}
+  object-position:center 58%;opacity:0}
+/* the incoming photo fades in over the outgoing one (layered by script), which is removed once covered:
+   nothing moves or dips, it just looks like the floor changing */
+.pass-image.on{opacity:1;transition:opacity .45s ease-out}
 .pass-meter{position:absolute;z-index:3;left:20px;right:20px;bottom:18px;display:flex;gap:8px}
 .pass-meter-segment{display:block;flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.22);overflow:hidden}
 .pass-meter i{display:block;width:100%;height:100%;border-radius:inherit;background:var(--accent-soft);
   transform:scaleX(0);transform-origin:left center;transition:transform .26s ease-in}
 .pass-meter i.on{transform:scaleX(1);transition:transform .52s cubic-bezier(.45,.05,.25,1)}
-.pass-meter[style*="--snap"] i{transition:none}
+.pass-grid.snap .pass-image,.pass-grid.snap .pass-step,.pass-grid.snap .pass-meter i{transition:none!important}
 
 /* Desktop: one pinned stage. The photo sits centred on the page, the step text sits on
    the photo, and the section is tall enough to give each step one screen of scroll. */
@@ -436,7 +436,7 @@ section[id]{scroll-margin-top:calc(var(--hdr) + 12px)}
     padding:0 clamp(28px,3.5vw,56px);opacity:0;
     transition:opacity .2s ease}
   .pass-step:first-child{padding-top:0}
-  .pass-step.on{opacity:1;transition:opacity .3s ease .2s}
+  .pass-step.on{opacity:1;transition:opacity .3s ease}
   .pass-number{font-size:clamp(2.8rem,4.4vw,4.4rem)}
   .pass-step .pass-detail{color:rgba(234,240,238,.9);max-width:40ch}
   /* a touch larger than the frame so the photo's edges (and anything stamped on them) stay out of view;
